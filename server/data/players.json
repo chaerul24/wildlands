@@ -1,0 +1,62 @@
+{
+  "WL-TEST": {
+    "playerId": "WL-TEST",
+    "level": 2,
+    "gold": 100,
+    "updatedAt": "2026-10-19T12:04:18.189Z"
+  },
+  "WL-TESTER": {
+    "playerId": "WL-TESTER",
+    "playerName": "Ksatria",
+    "level": 2,
+    "gold": 120,
+    "inventory": {
+      "items": [
+        {
+          "id": "potion_hp",
+          "count": 3
+        }
+      ]
+    },
+    "updatedAt": "2026-10-19T12:04:18.997Z"
+  },
+  "WL-5374": {
+    "playerId": "WL-5374",
+    "playerName": "Explorer_962",
+    "level": 3,
+    "xp": 135,
+    "xpNext": 675,
+    "gold": 207,
+    "inventory": {
+      "items": [
+        {
+          "id": "potion_hp",
+          "count": 3
+        },
+        {
+          "id": "potion_sta",
+          "count": 3
+        },
+        {
+          "id": "wpn_wood_sword",
+          "count": 1
+        },
+        {
+          "id": "quest_marauder_insignia",
+          "count": 1
+        }
+      ],
+      "equipped": {
+        "weapon": "wpn_iron_sword",
+        "shield": "shd_wood_buckler",
+        "armor": "arm_leather_tunic"
+      }
+    },
+    "quests": {
+      "active": [],
+      "completed": []
+    },
+    "savedAt": "2026-10-19T16:20:24.012Z",
+    "updatedAt": "2026-10-19T16:20:25.128Z"
+  }
+}

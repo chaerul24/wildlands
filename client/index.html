@@ -57,6 +57,12 @@
 
         <!-- Right Side: Player Profile Snippet & Currencies -->
         <div class="top-bar-right">
+          <!-- Android APK Download Button -->
+          <a href="/wildlands.apk" download="Wildlands-RPG.apk" id="btn-download-apk" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 12px; box-shadow: 0 2px 8px rgba(16,185,129,0.4); margin-right: 8px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <span>📱</span>
+            <span>APK Android</span>
+          </a>
+
           <!-- Currencies -->
           <div class="currencies-row">
             <div class="currency-chip" title="Emas (Gold)">
@@ -281,6 +287,21 @@
             <span id="coords-text">X: 0  Y: 0  Z: 0</span>
           </div>
 
+          <button id="btn-hud-inventory" class="hud-icon-btn interactive" title="Buka Tas [I]" aria-label="Buka Tas">
+            <span style="font-size: 14px;">🎒</span>
+            <span style="font-size: 11px; margin-left: 4px; font-weight: 600;">Tas [I]</span>
+          </button>
+
+          <button id="btn-hud-shop" class="hud-icon-btn interactive" title="Toko Pedang [P]" aria-label="Toko Pedang">
+            <span style="font-size: 14px;">⚔️</span>
+            <span style="font-size: 11px; margin-left: 4px; font-weight: 600;">Toko</span>
+          </button>
+
+          <button id="btn-hud-map" class="hud-icon-btn interactive" title="Peta Dunia [M]" aria-label="Peta Dunia">
+            <span style="font-size: 14px;">🗺️</span>
+            <span style="font-size: 11px; margin-left: 4px; font-weight: 600;">Peta [M]</span>
+          </button>
+
           <button id="btn-hud-lobby" class="hud-icon-btn interactive" title="Kembali ke Lobby" aria-label="Kembali ke Lobby">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
@@ -300,9 +321,32 @@
         </div>
       </div>
 
+      <!-- HUD CIRCULAR RADAR MINIMAP -->
+      <div id="hud-minimap-container" class="interactive" title="Klik untuk membuka Peta Dunia Lengkap [M]">
+        <div class="minimap-bezel">
+          <canvas id="hud-minimap-canvas" width="130" height="130"></canvas>
+          <div class="minimap-crosshair"></div>
+          <span class="minimap-compass-n">U</span>
+        </div>
+        <div class="minimap-footer">
+          <span id="minimap-coords">X: 0, Z: 0</span>
+        </div>
+      </div>
+
       <div class="center-crosshair"></div>
 
-      <!-- PLAYER HEALTH BAR IN HUD -->
+      <!-- HUD QUEST TRACKER WIDGET -->
+      <div id="hud-quest-tracker" class="hud-quest-card interactive">
+        <div class="quest-tracker-header">
+          <span class="qt-badge">📜 MISI AKTIF</span>
+          <span id="hud-quest-title" class="qt-title">Ancaman di Rumah Tua Lapuk</span>
+        </div>
+        <div id="hud-quest-objectives" class="qt-objectives-list">
+          <!-- Populated dynamically by QuestManager -->
+        </div>
+      </div>
+
+      <!-- PLAYER HEALTH & STAMINA BARS IN HUD -->
       <div id="hud-player-hp-card" class="player-hp-card">
         <div class="hp-card-header">
           <span class="hp-player-name" id="hud-player-name">⚔️ Explorer</span>
@@ -311,11 +355,20 @@
         <div class="hp-track">
           <div id="hud-player-hp-fill" class="hp-fill" style="width: 100%;"></div>
         </div>
+
+        <!-- STAMINA BAR -->
+        <div style="margin-top: 6px; height: 7px; background: rgba(0,0,0,0.45); border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08);">
+          <div id="hud-player-sta-fill" style="width: 100%; height: 100%; background: linear-gradient(90deg, #38bdf8, #0284c7); transition: width 0.12s ease;"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-top: 2px;">
+          <span>⚡ Stamina</span>
+          <span id="hud-player-sta-text">100 / 100 STA</span>
+        </div>
       </div>
 
       <div class="hud-bottom">
         <div class="quick-help">
-          <span>[WASD] Bergerak &nbsp;|&nbsp; [Space] Lompat &nbsp;|&nbsp; [Click / F] Serang &nbsp;|&nbsp; [Shift] Sprint &nbsp;|&nbsp; [Tab] Pemain</span>
+          <span>[WASD] Bergerak &nbsp;|&nbsp; [Space] Lompat &nbsp;|&nbsp; [Click / F] Serang &nbsp;|&nbsp; [Q] Roll/Dodge &nbsp;|&nbsp; [E] Interaksi/Loot &nbsp;|&nbsp; [I] Tas &nbsp;|&nbsp; [Tab] Pemain</span>
         </div>
       </div>
     </div>
@@ -323,34 +376,91 @@
     <!-- HURT VIGNETTE SCREEN FLASH -->
     <div id="hud-hurt-vignette" class="hurt-vignette"></div>
 
-    <!-- MOBILE VIRTUAL CONTROLS -->
+    <!-- MOBILE VIRTUAL CONTROLS (SURVIVAL RAFT / RPG STONE THEMED) -->
     <div id="mobile-controls">
-      <!-- Virtual Joystick for movement -->
+      <!-- 1. Analog Joystick on Bottom-Left with Heavy Stone Ring & Arrow Chevrons -->
       <div id="joystick-zone" class="interactive">
         <div id="joystick-base">
-          <div id="joystick-knob"></div>
+          <div class="joystick-ring-bevel"></div>
+          <div class="joystick-inner-track"></div>
+          <div class="joystick-chevrons">
+            <span class="j-chevron j-up">▲</span>
+            <span class="j-chevron j-right">▶</span>
+            <span class="j-chevron j-down">▼</span>
+            <span class="j-chevron j-left">◀</span>
+          </div>
+          <div id="joystick-knob">
+            <div class="knob-texture"></div>
+            <div class="knob-center-stud"></div>
+          </div>
         </div>
       </div>
 
-      <!-- Action buttons: Attack, Sprint, and Jump -->
-      <div id="mobile-actions" class="interactive">
-        <button id="btn-mobile-attack" class="mobile-action-btn btn-attack" type="button" aria-label="Serang">
-          <span style="font-size: 26px;">⚔️</span>
-          <span>SERANG</span>
+      <!-- 2. Quick Action Hotbar & Leather Backpack (Bottom-Center, Reference Image Style) -->
+      <div id="mobile-bottom-bar" class="interactive">
+        <button id="btn-mobile-backpack" class="hotbar-backpack-btn" type="button" aria-label="Buka Tas (I)" title="Tas Petualang">
+          <div class="backpack-icon-wrap">🎒</div>
+          <span class="backpack-tag">TAS</span>
         </button>
 
-        <button id="btn-mobile-sprint" class="mobile-action-btn" type="button" aria-label="Sprint">
-          <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+        <div id="mobile-hotbar" class="hotbar-frame">
+          <button class="hotbar-slot-btn" data-slot="1" type="button" title="Gunakan Potion HP [1]">
+            <span class="slot-icon">🧪</span>
+            <span id="hotbar-count-1" class="slot-count">x3</span>
+            <span class="slot-hotkey">1</span>
+          </button>
+          <button class="hotbar-slot-btn" data-slot="2" type="button" title="Gunakan Elixir Stamina [2]">
+            <span class="slot-icon">⚡</span>
+            <span id="hotbar-count-2" class="slot-count">x2</span>
+            <span class="slot-hotkey">2</span>
+          </button>
+          <button class="hotbar-slot-btn" data-slot="3" type="button" title="Senjata [3]">
+            <span class="slot-icon">🗡️</span>
+            <span id="hotbar-count-3" class="slot-count"></span>
+            <span class="slot-hotkey">3</span>
+          </button>
+          <button class="hotbar-slot-btn" data-slot="4" type="button" title="Material [4]">
+            <span class="slot-icon">🪨</span>
+            <span id="hotbar-count-4" class="slot-count">x5</span>
+            <span class="slot-hotkey">4</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. Professional Action Buttons on Bottom-Right (Stone Ring Motif) -->
+      <div id="mobile-actions" class="interactive">
+        <!-- Contextual Interact Button (Hand/Speech) -->
+        <button id="btn-mobile-interact" class="mobile-action-btn btn-interact-stone" type="button" aria-label="Interaksi [E]">
+          <div class="action-stone-ring"></div>
+          <span class="action-btn-icon">✋</span>
+          <span class="action-btn-label">AKSI</span>
+        </button>
+
+        <!-- Dodge Roll / Sprint (Runner Silhouette like reference image) -->
+        <button id="btn-mobile-roll" class="mobile-action-btn btn-runner-stone" type="button" aria-label="Gulir [Q]">
+          <div class="action-stone-ring"></div>
+          <svg class="runner-silhouette-svg" viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
             <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7z"/>
           </svg>
-          <span>SPRINT</span>
+          <span class="action-btn-label">GULIR</span>
         </button>
 
-        <button id="btn-mobile-jump" class="mobile-action-btn" type="button" aria-label="Jump">
-          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+        <!-- Jump Button -->
+        <button id="btn-mobile-jump" class="mobile-action-btn btn-jump-stone" type="button" aria-label="Lompat [Spasi]">
+          <div class="action-stone-ring"></div>
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
             <path d="M12 4l-7 7h4v8h6v-8h4z"/>
           </svg>
-          <span>JUMP</span>
+          <span class="action-btn-label">LOMPAT</span>
+        </button>
+
+        <!-- Primary Weapon Attack Button (Axe / Sword in Heavy Stone Ring) -->
+        <button id="btn-mobile-attack" class="mobile-action-btn btn-attack-stone" type="button" aria-label="Serang [F]">
+          <div class="attack-stone-ring"></div>
+          <div class="attack-inner-disk">
+            <span class="attack-weapon-symbol">🪓</span>
+          </div>
+          <span class="attack-badge-text">SERANG</span>
         </button>
       </div>
     </div>
@@ -383,6 +493,11 @@
           </select>
         </div>
 
+        <div class="settings-row">
+          <span style="font-size: 14px; color: #cbd5e1;">Kontrol Analog / Joystick</span>
+          <button id="btn-toggle-analog" class="btn-secondary" type="button" style="padding: 6px 14px; font-size: 12px;">🕹️ Toggle Analog</button>
+        </div>
+
         <button id="btn-fullscreen-pause" class="btn-secondary" type="button" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
           <svg class="fs-icon-enter" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
@@ -395,6 +510,75 @@
 
         <button id="btn-resume" class="btn-primary" style="margin-top: 15px;">Resume Game</button>
         <button id="btn-leave" class="btn-secondary">Kembali ke Lobby</button>
+      </div>
+    </div>
+
+    <!-- RPG UNIFIED 3-SHOP MODAL (WEAPONS, ARMOR, FOOD) -->
+    <div id="rpg-shop-modal" class="rpg-shop-overlay" style="display: none;">
+      <div class="rpg-shop-card">
+        <header class="shop-header">
+          <div class="shop-title-group">
+            <span class="shop-header-icon" id="shop-header-icon">⚔️</span>
+            <div>
+              <h2 class="shop-title" id="shop-header-title">TOKO PEDANG & PUSAKA LEMBAH</h2>
+              <span class="shop-subtitle" id="shop-header-subtitle">Mang Asep • Pandai Besi & Penjual Senjata</span>
+            </div>
+          </div>
+          <div class="shop-header-right">
+            <div class="shop-gold-badge">
+              <span class="gold-icon">🪙</span>
+              <span id="shop-player-gold">250 Emas</span>
+            </div>
+            <button id="btn-close-shop" class="dialogue-close-btn interactive" type="button" aria-label="Tutup Toko">✕</button>
+          </div>
+        </header>
+
+        <!-- CATEGORY TABS -->
+        <nav class="shop-tabs-nav interactive" id="shop-category-tabs">
+          <button class="shop-tab-btn active" data-tab="all" type="button">🌟 Semua Barang</button>
+          <button class="shop-tab-btn" data-tab="weapon" type="button">⚔️ Toko Senjata</button>
+          <button class="shop-tab-btn" data-tab="armor" type="button">🛡️ Toko Zirah</button>
+          <button class="shop-tab-btn" data-tab="food" type="button">🍞 Toko Makanan</button>
+        </nav>
+
+        <main id="shop-swords-grid" class="shop-grid interactive">
+          <!-- Populated dynamically by ShopUI -->
+        </main>
+      </div>
+    </div>
+
+    <!-- RPG WORLD MAP MODAL -->
+    <div id="rpg-world-map-modal" class="rpg-world-map-overlay interactive" style="display: none;">
+      <div class="world-map-card interactive">
+        <header class="world-map-header">
+          <div class="map-title-group">
+            <span class="map-header-icon">🗺️</span>
+            <div>
+              <h2 class="map-title">PETA DUNIA WILDLANDS</h2>
+              <span class="map-subtitle">Realm Eksplorasi Lembah, Rimba & Reruntuhan</span>
+            </div>
+          </div>
+          <div class="map-header-right">
+            <div class="map-coords-badge">
+              <span>📍 Posisi:</span>
+              <span id="map-player-coord-val">X: 0, Z: 0</span>
+            </div>
+            <button id="btn-close-map" class="dialogue-close-btn interactive" type="button" aria-label="Tutup Peta">✕</button>
+          </div>
+        </header>
+
+        <div class="world-map-body">
+          <div class="world-map-canvas-wrap">
+            <canvas id="world-map-canvas" width="600" height="600"></canvas>
+          </div>
+          <div class="world-map-legend">
+            <div class="legend-item"><span class="legend-dot player"></span> Posisi Anda</div>
+            <div class="legend-item"><span class="legend-dot village"></span> Permukiman Desa</div>
+            <div class="legend-item"><span class="legend-dot merchant"></span> Pedagang & Senjata</div>
+            <div class="legend-item"><span class="legend-dot npc"></span> Penduduk Lembah</div>
+            <div class="legend-item"><span class="legend-dot quest"></span> Target Misi (Rumah Lapuk)</div>
+          </div>
+        </div>
       </div>
     </div>
 

@@ -15,7 +15,7 @@ const STORAGE_KEYS = {
 
 export class LobbyData {
   constructor() {
-    this.serverUrl = import.meta.env.VITE_SERVER_URL || `http://${window.location.hostname || 'localhost'}:3001`;
+    this.serverUrl = import.meta.env.VITE_SERVER_URL || (window.location.port === '5173' ? `http://${window.location.hostname || 'localhost'}:3001` : window.location.origin);
 
     this.profile = this.loadProfile();
     this.settings = this.loadSettings();
@@ -111,7 +111,13 @@ export class LobbyData {
 
   saveProfile(profile) {
     this.profile = profile || this.profile;
-    localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(this.profile));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(this.profile));
+    }
+  }
+
+  saveLocal() {
+    this.saveProfile();
   }
 
   loadSettings() {

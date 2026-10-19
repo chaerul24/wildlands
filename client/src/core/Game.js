@@ -12,6 +12,16 @@ import { UIManager } from '../ui/UIManager.js';
 import { LobbyManager } from '../lobby/LobbyManager.js';
 import { HideoutScene } from '../lobby/HideoutScene.js';
 import { EnemyManager } from '../combat/EnemyManager.js';
+import { InventoryManager } from '../rpg/InventoryManager.js';
+import { InventoryUI } from '../rpg/InventoryUI.js';
+import { LootManager } from '../rpg/LootManager.js';
+import { QuestManager } from '../rpg/QuestManager.js';
+import { DialogueManager } from '../rpg/DialogueManager.js';
+import { SaveSystem } from '../rpg/SaveSystem.js';
+import { OnboardingManager } from '../rpg/OnboardingManager.js';
+import { ShopUI } from '../rpg/ShopUI.js';
+import { Minimap } from '../ui/Minimap.js';
+import { RPG_ITEMS } from '../rpg/RPGConfig.js';
 
 export class Game {
   constructor() {
@@ -40,6 +50,15 @@ export class Game {
     this.lobby = null;
     this.hideout = null;
     this.enemyManager = null;
+
+    // RPG Subsystems
+    this.inventory = null;
+    this.inventoryUI = null;
+    this.lootManager = null;
+    this.questManager = null;
+    this.dialogueManager = null;
+    this.saveSystem = null;
+    this.onboarding = null;
 
     // Network status cache
     this.latestNetworkStatus = { connected: false, ping: 0, onlineCount: 1, players: [] };
@@ -92,6 +111,29 @@ export class Game {
         this.enemyManager.onPlayerAttack(this.player);
       }
     };
+    this.input.onRollPressed = () => {
+      if (this.isRunning && !this.isPaused && this.player && this.enemyManager) {
+        this.enemyManager.onPlayerRoll(this.player);
+      }
+    };
+    this.input.onInteractPressed = () => {
+      if (this.isRunning && !this.isPaused) {
+        if (!this.lootManager.tryInteract()) {
+          this.dialogueManager.tryInteract();
+        }
+      }
+    };
+    this.input.onInventoryToggled = () => {
+      if (this.isRunning && !this.isPaused) {
+        this.inventoryUI.toggle();
+      }
+    };
+    this.input.onQuickslotPressed = (slotNum) => {
+      if (this.isRunning && !this.isPaused && this.inventory) {
+        if (slotNum === 1) this.inventory.useItem('potion_hp', this.enemyManager?.combat);
+        else if (slotNum === 2) this.inventory.useItem('potion_sta', this.enemyManager?.combat);
+      }
+    };
 
     // 6. Camera Controller
     this.cameraController = new CameraController(this.camera, this.terrain, this.buildings);
@@ -137,14 +179,129 @@ export class Game {
     const initialName = this.lobby ? this.lobby.data.profile.username : 'Explorer';
     this.hideout = new HideoutScene(this.canvas, initialName);
 
-    // 8d. 3D Enemy Combat & AI Subsystem
+    // 8d. Core RPG Subsystems (Inventory, Loot, Quests, Dialogues, Save)
+    this.inventory = new InventoryManager(
+      this.lobby?.data?.profile?.level || 1,
+      (stats) => {
+        if (this.enemyManager && this.enemyManager.combat) {
+          this.enemyManager.combat.setStats(stats);
+        }
+      },
+      (msg, type) => {
+        if (this.ui) this.ui.showToast(msg, type);
+      }
+    );
+
+    this.questManager = new QuestManager(this.inventory, this.lobby ? this.lobby.data : null, null);
+    this.lootManager = new LootManager(this.scene, this.inventory, this.lobby ? this.lobby.data : null, null);
+    this.lootManager.onLootCollected = (loot) => {
+      this.questManager.onLootCollected(loot);
+      if (this.saveSystem) this.saveSystem.save();
+    };
+
+    // 8e. 3D Enemy Combat & AI Subsystem
     this.enemyManager = new EnemyManager(
       this.scene,
       this.terrain,
       this.buildings,
       this.camera,
-      this.lobby ? this.lobby.data : null
+      this.lobby ? this.lobby.data : null,
+      this.lootManager,
+      this.questManager
     );
+
+    // Audio linkage
+    this.lootManager.audio = this.enemyManager.combat.audio;
+    this.questManager.audio = this.enemyManager.combat.audio;
+    this.enemyManager.combat.setStats(this.inventory.getStats());
+
+    // 8f. 3D Dialogue, Shop, Minimap & Inventory UI Controllers
+    this.shopUI = new ShopUI(
+      this.inventory,
+      this.enemyManager.combat,
+      this.input,
+      this.lobby ? this.lobby.data : null,
+      (weaponDef) => {
+        if (this.player && this.player.character && typeof this.player.character.attachWeapon === 'function') {
+          this.player.character.attachWeapon(weaponDef.modelUrl);
+        }
+      }
+    );
+
+    this.dialogueManager = new DialogueManager(this.npcManager, this.questManager, this.input, this.shopUI);
+    this.inventoryUI = new InventoryUI(this.inventory, this.enemyManager.combat, this.input);
+
+    // Sync weapon equipping from inventory bag to player 3D mesh
+    const origEquipItem = this.inventory.equipItem.bind(this.inventory);
+    this.inventory.equipItem = (itemId) => {
+      const ok = origEquipItem(itemId);
+      if (ok) {
+        const itemDef = RPG_ITEMS[itemId];
+        if (itemDef && itemDef.type === 'weapon' && this.player && this.player.character && typeof this.player.character.attachWeapon === 'function') {
+          this.player.character.attachWeapon(itemDef.modelUrl);
+        }
+      }
+      return ok;
+    };
+
+    // 8fa. In-game Circular Radar Minimap & Full World Map Modal
+    this.minimap = new Minimap(
+      this.player,
+      this.npcManager,
+      this.buildings,
+      this.questManager,
+      this.input
+    );
+
+    // Keydown listener for Shop [P]
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'p' || e.key === 'P') {
+        if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) return;
+        if (this.isRunning && !this.isPaused && this.shopUI) {
+          e.preventDefault();
+          this.shopUI.toggle();
+        }
+      }
+    });
+
+    // 8g. Persistence Save / Load System
+    this.saveSystem = new SaveSystem(this.lobby ? this.lobby.data : null, this.inventory, this.questManager);
+    this.saveSystem.load();
+
+    // 8h. Quest Tracker HUD Integration
+    this.questManager.onQuestUpdated = (quests) => this.updateQuestTrackerHUD(quests);
+    this.updateQuestTrackerHUD(this.questManager.getActiveQuestsList());
+
+    // 8i. Wire HUD & Mobile Interactive Buttons
+    const btnHudInv = document.getElementById('btn-hud-inventory');
+    if (btnHudInv) {
+      btnHudInv.addEventListener('click', () => {
+        if (this.isRunning && !this.isPaused) this.inventoryUI.toggle();
+      });
+    }
+
+    const btnMobInteract = document.getElementById('btn-mobile-interact');
+    if (btnMobInteract) {
+      btnMobInteract.addEventListener('click', () => {
+        if (this.isRunning && !this.isPaused) {
+          if (!this.lootManager.tryInteract()) this.dialogueManager.tryInteract();
+        }
+      });
+    }
+
+    const btnMobRoll = document.getElementById('btn-mobile-roll');
+    if (btnMobRoll) {
+      btnMobRoll.addEventListener('click', () => {
+        if (this.isRunning && !this.isPaused && this.player && this.enemyManager) {
+          this.enemyManager.onPlayerRoll(this.player);
+        }
+      });
+    }
+
+    // 8j. Onboarding Tutorial Flow (Splash -> Loading -> Onboarding -> Lobby)
+    this.onboarding = new OnboardingManager(() => {
+      // Ready for gameplay
+    });
 
     // 9. Resize & orientation listeners
     window.addEventListener('resize', () => this.onWindowResize());
@@ -167,6 +324,17 @@ export class Game {
     // Spawn local player
     if (!this.player) {
       this.player = new Player(this.scene, this.terrain, this.buildings, playerName);
+      if (this.minimap) {
+        this.minimap.player = this.player;
+      }
+      // Attach initial equipped weapon
+      const currentEquippedWeaponId = this.inventory?.equipped?.weapon;
+      if (currentEquippedWeaponId) {
+        const weaponDef = RPG_ITEMS[currentEquippedWeaponId];
+        if (weaponDef && weaponDef.modelUrl && this.player.character && typeof this.player.character.attachWeapon === 'function') {
+          this.player.character.attachWeapon(weaponDef.modelUrl);
+        }
+      }
     }
 
     // Connect to multiplayer server with initial spawn elevation
@@ -186,8 +354,14 @@ export class Game {
     }
 
     if (this.lobby && this.lobby.data) {
-      this.lobby.data.profile.stats.gamesPlayed = (this.lobby.data.profile.stats.gamesPlayed || 0) + 1;
-      this.lobby.data.saveLocal();
+      if (this.lobby.data.profile && this.lobby.data.profile.stats) {
+        this.lobby.data.profile.stats.gamesPlayed = (this.lobby.data.profile.stats.gamesPlayed || 0) + 1;
+      }
+      if (typeof this.lobby.data.saveProfile === 'function') {
+        this.lobby.data.saveProfile();
+      } else if (typeof this.lobby.data.saveLocal === 'function') {
+        this.lobby.data.saveLocal();
+      }
     }
   }
 
@@ -212,6 +386,9 @@ export class Game {
   }
 
   leaveGame() {
+    if (this.saveSystem) {
+      this.saveSystem.save();
+    }
     this.isRunning = false;
     this.isPaused = false;
     this.input.isPaused = true;
@@ -225,6 +402,29 @@ export class Game {
     if (this.lobby && this.lobby.isInWorld) {
       this.lobby.returnToLobby();
     }
+  }
+
+  updateQuestTrackerHUD(quests) {
+    const trackerEl = document.getElementById('hud-quest-tracker');
+    const titleEl = document.getElementById('hud-quest-title');
+    const container = document.getElementById('hud-quest-objectives');
+    if (!trackerEl || !container) return;
+
+    if (!quests || quests.length === 0) {
+      trackerEl.style.display = 'none';
+      return;
+    }
+
+    trackerEl.style.display = 'flex';
+    const q = quests[0];
+    if (titleEl) titleEl.textContent = q.title;
+
+    container.innerHTML = q.objectives.map(obj => `
+      <div class="qt-objective-item ${obj.completed ? 'done' : ''}">
+        <span class="qt-check-icon">${obj.completed ? '✅' : '⚪'}</span>
+        <span>${obj.text}</span>
+      </div>
+    `).join('');
   }
 
   setQuality(preset) {
@@ -246,7 +446,17 @@ export class Game {
     const width = window.innerWidth;
     const height = window.innerHeight;
     this.camera.aspect = width / Math.max(1, height);
+    
+    // In-game 3rd-person camera vertical FOV adaptation
+    if (width < height) {
+      this.camera.fov = 68;
+    } else if (height <= 450) {
+      this.camera.fov = 56;
+    } else {
+      this.camera.fov = 60;
+    }
     this.camera.updateProjectionMatrix();
+
     this.renderer.setSize(width, height);
     if (this.hideout) {
       this.hideout.onResize(width, height);
@@ -255,6 +465,9 @@ export class Game {
       this.renderer.setPixelRatio(1.0);
     } else {
       this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.qualityPreset === 'high' ? 2 : 1.5));
+    }
+    if (this.ui) {
+      this.ui.updateMobileControlsVisibility();
     }
   }
 
@@ -305,6 +518,22 @@ export class Game {
 
       // 5. Update HUD coordinates
       this.ui.updateHUD(this.latestNetworkStatus, this.player.position);
+
+      // 5b. Update RPG Subsystems (Loot proximity, Dialogue proximity, Quest location checks)
+      const isSprinting = this.input.keys.ShiftLeft || this.input.keys.ShiftRight || this.input.isTouchSprinting;
+
+      if (this.lootManager) {
+        this.lootManager.update(dt, this.player.position);
+      }
+      if (this.dialogueManager) {
+        this.dialogueManager.update(this.player.position);
+      }
+      if (this.questManager) {
+        this.questManager.onPlayerMoved(this.player.position);
+      }
+      if (this.minimap) {
+        this.minimap.update(this.player, dt);
+      }
 
       // 6. Update animated landmarks & vegetation wind sway
       if (this.buildings) {

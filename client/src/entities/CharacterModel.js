@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { CharacterFactory } from './CharacterFactory.js';
 
 export class CharacterModel {
   constructor(name = 'Player', color = '#4ade80', customModelUrl = null) {
@@ -19,6 +20,12 @@ export class CharacterModel {
     this.activeAction = null;
     this.gltfModel = null;
     this.currentModelUrl = '';
+
+    // Weapon attachment
+    this.attachedWeaponMesh = null;
+    this.currentAttachedWeaponUrl = null;
+    this.gltfWeaponSocket = null;
+    this.defaultWeaponMesh = null;
 
     // Procedural hierarchy nodes
     this.proceduralRoot = new THREE.Group();
@@ -58,27 +65,11 @@ export class CharacterModel {
           const model = gltf.scene;
           this.gltfModel = model;
 
-          // Compute model dimensions and ground alignment
-          const box = new THREE.Box3().setFromObject(model);
-          const size = new THREE.Vector3();
-          box.getSize(size);
-
-          // Scale to 1.82m standard adult human height
-          const targetHeight = 1.82;
-          const scale = targetHeight / Math.max(0.1, size.y);
-          model.scale.set(scale, scale, scale);
-
-          // Recompute grounded box
-          box.setFromObject(model);
-          model.position.y = -box.min.y;
-
-          // Enable shadows
-          model.traverse((child) => {
-            if (child.isMesh) {
-              child.castShadow = true;
-              child.receiveShadow = true;
-            }
-          });
+          // Standardize model dimensions, grounding, materials, and sockets using CharacterFactory
+          const stdInfo = CharacterFactory.standardizeModel(model, 1.82);
+          if (stdInfo && stdInfo.sockets && stdInfo.sockets.rightHand) {
+            this.gltfWeaponSocket = stdInfo.sockets.rightHand;
+          }
 
           // Set up AnimationMixer
           this.actions = {};
@@ -112,8 +103,12 @@ export class CharacterModel {
               if (clipName.includes('jump')) {
                 this.actions.jump = action;
               } else if (clipName.includes('attack') || clipName.includes('shoot') || clipName.includes('punch')) {
-                if (!this.actions.attack || clipName === 'sword_attack') {
+                if (clipName === 'sword_attack' || clipName === 'attack1' || !this.actions.attack) {
                   this.actions.attack = action;
+                  this.actions.attack1 = action;
+                }
+                if (clipName === 'sword_attack2' || clipName === 'attack2') {
+                  this.actions.attack2 = action;
                 }
                 action.setLoop(THREE.LoopOnce, 1);
               } else if (clipName.includes('hit') || clipName.includes('hurt')) {
@@ -145,12 +140,31 @@ export class CharacterModel {
             if (!this.actions.jump && (this.actions.roll || this.actions.run)) {
               this.actions.jump = this.actions.roll || this.actions.run;
             }
+            if (!this.actions.attack1 && this.actions.attack) {
+              this.actions.attack1 = this.actions.attack;
+            }
+            if (!this.actions.attack2) {
+              this.actions.attack2 = this.actions.attack1 || this.actions.attack;
+            }
 
             // Start idle
             if (this.actions.idle) {
               this.activeAction = this.actions.idle;
               this.activeAction.play();
             }
+          }
+
+          // Locate weapon attachment socket & default sword
+          model.traverse((child) => {
+            if (child.name === 'Weapon.R') {
+              this.gltfWeaponSocket = child;
+            } else if (child.name === 'Warrior_Sword') {
+              this.defaultWeaponMesh = child;
+            }
+          });
+
+          if (this.currentAttachedWeaponUrl) {
+            this.attachWeapon(this.currentAttachedWeaponUrl);
           }
 
           // Hide procedural fallback, show GLTF human model
@@ -466,6 +480,13 @@ export class CharacterModel {
     const rightHand = new THREE.Mesh(handGeo, skinMat);
     rightArmPivot.add(rightHand);
 
+    // Procedural weapon attachment socket in right hand
+    const weaponSocket = new THREE.Group();
+    weaponSocket.position.set(0, -0.52, 0.05);
+    weaponSocket.rotation.set(-Math.PI / 2, 0, 0);
+    rightArmPivot.add(weaponSocket);
+    this.nodes.weaponSocket = weaponSocket;
+
     // 6. Left & Right Leg Assemblies (Pivoting at hips: Y = 0 on pelvis, total drop = 0.96m to Y = 0.00)
     // Left Leg
     const leftLegPivot = new THREE.Group();
@@ -573,7 +594,14 @@ export class CharacterModel {
       this.currentAnim = state;
 
       // Handle GLTF Animation Cross-Fading
-      const nextAction = this.actions[state] || (state === 'jump' ? (this.actions.jump_idle || this.actions.jump) : null);
+      let nextAction = this.actions[state];
+      if (!nextAction) {
+        if (state === 'jump') nextAction = this.actions.jump_idle || this.actions.jump;
+        else if (state === 'attack1') nextAction = this.actions.sword_attack || this.actions.attack;
+        else if (state === 'attack2') nextAction = this.actions.sword_attack2 || this.actions.attack2 || this.actions.attack;
+        else if (state === 'attack') nextAction = this.actions.attack1 || this.actions.sword_attack;
+        else if (state === 'talk' || state === 'talking') nextAction = this.actions.talk || this.actions.interact || this.actions.cheer || this.actions.idle;
+      }
       if (this.mixer && nextAction) {
         const prevAction = this.actions[prevAnim] || this.activeAction;
 
@@ -595,14 +623,18 @@ export class CharacterModel {
         this.activeAction.timeScale = 1.0;
       } else if (this.currentAnim === 'idle') {
         this.activeAction.timeScale = 1.0;
-      } else if (this.currentAnim === 'attack') {
+      } else if (this.currentAnim === 'attack' || this.currentAnim === 'attack1') {
         this.activeAction.timeScale = 1.25;
+      } else if (this.currentAnim === 'attack2') {
+        this.activeAction.timeScale = 1.10;
       } else if (this.currentAnim === 'hurt') {
         this.activeAction.timeScale = 1.0;
       } else if (this.currentAnim === 'death') {
         this.activeAction.timeScale = 1.0;
       } else if (this.currentAnim === 'roll') {
         this.activeAction.timeScale = 1.15;
+      } else if (this.currentAnim === 'talk' || this.currentAnim === 'talking') {
+        this.activeAction.timeScale = 1.0;
       }
     }
 
@@ -619,7 +651,21 @@ export class CharacterModel {
     const { pelvis, torso, head, leftArm, rightArm, leftLeg, rightLeg } = this.nodes;
     if (!pelvis) return;
 
-    if (state === 'idle') {
+    if (state === 'talk' || state === 'talking') {
+      const nod = Math.sin(t * 3.5) * 0.10;
+      const gesture = (Math.sin(t * 2.2) + 1.0) * 0.5;
+      head.rotation.x = 0.05 + nod;
+      head.rotation.y = Math.sin(t * 1.5) * 0.12;
+      torso.rotation.y = Math.sin(t * 1.2) * 0.06;
+      rightArm.rotation.x = -0.5 - gesture * 0.4;
+      rightArm.rotation.y = 0.2 + gesture * 0.3;
+      rightArm.rotation.z = -0.3;
+      leftArm.rotation.x = 0.1;
+      leftArm.rotation.z = 0.15;
+      leftLeg.rotation.x = 0;
+      rightLeg.rotation.x = 0;
+      pelvis.rotation.x = 0;
+    } else if (state === 'idle') {
       const breath = Math.sin(t) * 0.02;
       torso.scale.set(1.0 + breath * 0.3, 1.0 + breath, 1.0 + breath * 0.3);
       head.rotation.x = Math.sin(t * 0.5) * 0.02;
@@ -632,6 +678,34 @@ export class CharacterModel {
       leftLeg.rotation.x = 0;
       rightLeg.rotation.x = 0;
       pelvis.rotation.x = 0;
+    } else if (state === 'attack' || state === 'attack1') {
+      // Swing 1: Horizontal crescent slice across chest
+      const swing = (Math.sin(t * 12.0) + 1.0) * 0.5;
+      pelvis.rotation.x = 0.08;
+      pelvis.rotation.y = -0.2 + swing * 0.4;
+      torso.rotation.y = -0.5 + swing * 1.0;
+      rightArm.rotation.x = -1.2 + swing * 0.4;
+      rightArm.rotation.y = -0.8 + swing * 1.6;
+      rightArm.rotation.z = -0.4;
+      leftArm.rotation.x = 0.2;
+      leftArm.rotation.z = 0.35;
+      leftLeg.rotation.x = 0.15;
+      rightLeg.rotation.x = -0.15;
+    } else if (state === 'attack2') {
+      // Swing 2: Heavy overhead vertical cleave chop
+      const swing = (Math.sin(t * 10.0) + 1.0) * 0.5;
+      pelvis.rotation.x = 0.16;
+      pelvis.rotation.y = 0;
+      torso.rotation.x = -0.15 + swing * 0.4;
+      torso.rotation.y = 0.05;
+      rightArm.rotation.x = -2.6 + swing * 2.8;
+      rightArm.rotation.y = 0.1;
+      rightArm.rotation.z = -0.15;
+      leftArm.rotation.x = -2.2 + swing * 2.4;
+      leftArm.rotation.y = -0.1;
+      leftArm.rotation.z = 0.25;
+      leftLeg.rotation.x = -0.25;
+      rightLeg.rotation.x = 0.35;
     } else if (state === 'walk' || state === 'run') {
       const isRun = state === 'run';
       const stride = isRun ? 0.95 : 0.60;
@@ -672,5 +746,61 @@ export class CharacterModel {
       leftArm.rotation.z = 0.35;
       rightArm.rotation.z = -0.35;
     }
+  }
+
+  attachWeapon(modelUrl) {
+    this.currentAttachedWeaponUrl = modelUrl;
+
+    // Remove existing custom weapon mesh if attached
+    if (this.attachedWeaponMesh) {
+      if (this.attachedWeaponMesh.parent) {
+        this.attachedWeaponMesh.parent.remove(this.attachedWeaponMesh);
+      }
+      this.attachedWeaponMesh = null;
+    }
+
+    if (!modelUrl) {
+      if (this.defaultWeaponMesh) {
+        this.defaultWeaponMesh.visible = true;
+      }
+      return;
+    }
+
+    // Hide default model weapon (like Warrior_Sword in Warrior.gltf)
+    if (this.defaultWeaponMesh) {
+      this.defaultWeaponMesh.visible = false;
+    }
+
+    const loader = new GLTFLoader();
+    loader.load(
+      modelUrl,
+      (gltf) => {
+        if (this.currentAttachedWeaponUrl !== modelUrl) return;
+
+        const weaponScene = gltf.scene;
+        this.attachedWeaponMesh = weaponScene;
+
+        weaponScene.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+
+        const socket = (this.isGLTFLoaded && this.gltfWeaponSocket)
+          ? this.gltfWeaponSocket
+          : this.nodes.weaponSocket;
+
+        if (socket) {
+          weaponScene.scale.set(1.0, 1.0, 1.0);
+          weaponScene.rotation.set(0, 0, 0);
+          socket.add(weaponScene);
+        }
+      },
+      undefined,
+      (err) => {
+        console.warn(`[CharacterModel] Failed to load weapon ${modelUrl}:`, err);
+      }
+    );
   }
 }

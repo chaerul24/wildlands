@@ -2,12 +2,14 @@ import { EnemyController } from './EnemyController.js';
 import { EnemyCombat } from './EnemyCombat.js';
 
 export class EnemyManager {
-  constructor(scene, terrain, buildings, camera, lobbyData = null) {
+  constructor(scene, terrain, buildings, camera, lobbyData = null, lootManager = null, questManager = null) {
     this.scene = scene;
     this.terrain = terrain;
     this.buildings = buildings;
     this.camera = camera;
     this.lobbyData = lobbyData;
+    this.lootManager = lootManager;
+    this.questManager = questManager;
 
     // Combat system
     this.combat = new EnemyCombat(this.scene, this.camera);
@@ -26,7 +28,7 @@ export class EnemyManager {
       name: 'Warrior Marauder',
       level: 3,
       maxHp: 100,
-      attackDamage: 15,
+      attackDamage: 18,
       detectionRadius: 14.0,
       loseTargetRadius: 28.0,
       attackRange: 2.2,
@@ -53,16 +55,34 @@ export class EnemyManager {
 
     warrior.onDeath = (enemy) => {
       this.combat.audio.playEnemyDefeat();
-      if (window.__showWildlandsToast) {
-        window.__showWildlandsToast('🏆 Warrior Marauder berhasil dikalahkan! (+50 EXP & +30 Koin Emas)', 'success');
+
+      // 1. Spawn 3D World Loot Drop
+      if (this.lootManager) {
+        this.lootManager.spawnLootFromTable('warrior_marauder', enemy.position);
       }
+
+      // 2. Notify Quest System
+      if (this.questManager) {
+        this.questManager.onEnemyDefeated(enemy.id);
+      }
+
+      // 3. Grant Base Defeat EXP
       if (this.lobbyData) {
-        this.lobbyData.addGold(30);
-        this.lobbyData.addXP(50);
+        this.lobbyData.addGold(25);
+        this.lobbyData.addXP(45);
+      }
+
+      if (window.__showWildlandsToast) {
+        window.__showWildlandsToast('🏆 Warrior Marauder dikalahkan! (+45 EXP, +25 Emas). Ambil rampasannya!', 'success');
       }
     };
 
     this.enemies.push(warrior);
+  }
+
+  // Called on dodge roll input [Q]
+  onPlayerRoll(player) {
+    return this.combat.tryPlayerRoll(player);
   }
 
   // Called from Game.js on player input (Left Click, F key, or Mobile Attack Button)

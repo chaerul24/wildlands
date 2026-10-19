@@ -38,6 +38,10 @@ export class InputManager {
     this.onEscapePressed = null;
     this.onTabToggled = null;
     this.onAttackPressed = null;
+    this.onInteractPressed = null;
+    this.onRollPressed = null;
+    this.onInventoryToggled = null;
+    this.onQuickslotPressed = null;
 
     this.initKeyboardMouseListeners();
     this.initTouchListeners();
@@ -70,10 +74,34 @@ export class InputManager {
     };
 
     window.addEventListener('keydown', (e) => {
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
       handleKey(e, true);
 
-      if (e.code === 'KeyF' || (e.key && e.key.toLowerCase() === 'f')) {
+      const k = e.key ? e.key.toLowerCase() : '';
+
+      // [F] Attack
+      if (e.code === 'KeyF' || k === 'f') {
         if (this.onAttackPressed) this.onAttackPressed();
+      }
+
+      // [E] Interact (NPC / Loot)
+      if (e.code === 'KeyE' || k === 'e') {
+        if (this.onInteractPressed) this.onInteractPressed();
+      }
+
+      // [Q] Dodge / Roll
+      if (e.code === 'KeyQ' || k === 'q') {
+        if (this.onRollPressed) this.onRollPressed();
+      }
+
+      // [I] Inventory Modal Toggle
+      if (e.code === 'KeyI' || k === 'i') {
+        if (this.onInventoryToggled) this.onInventoryToggled();
+      }
+
+      // Quickslots [1], [2], [3], [4]
+      if (['1', '2', '3', '4'].includes(k)) {
+        if (this.onQuickslotPressed) this.onQuickslotPressed(parseInt(k, 10));
       }
 
       if (e.code === 'Tab') {
@@ -135,25 +163,70 @@ export class InputManager {
     const joystickZone = document.getElementById('joystick-zone');
     const joystickKnob = document.getElementById('joystick-knob');
     const btnJump = document.getElementById('btn-mobile-jump');
-    const btnSprint = document.getElementById('btn-mobile-sprint');
     const btnAttack = document.getElementById('btn-mobile-attack');
+    const btnRoll = document.getElementById('btn-mobile-roll');
+    const btnInteract = document.getElementById('btn-mobile-interact');
+    const btnBackpack = document.getElementById('btn-mobile-backpack');
+    const hotbarSlots = document.querySelectorAll('.hotbar-slot-btn');
 
-    // 0. Mobile Attack Button
+    // 0. Mobile Attack Button (Sword/Axe in Stone Ring)
     if (btnAttack) {
-      btnAttack.addEventListener('touchstart', (e) => {
+      const triggerAttack = (e) => {
         e.preventDefault();
         e.stopPropagation();
         if (this.onAttackPressed) this.onAttackPressed();
         btnAttack.classList.add('active');
-      }, { passive: false });
-      btnAttack.addEventListener('touchend', (e) => {
+      };
+      const releaseAttack = (e) => {
         e.preventDefault();
         e.stopPropagation();
         btnAttack.classList.remove('active');
-      }, { passive: false });
+      };
+      btnAttack.addEventListener('touchstart', triggerAttack, { passive: false });
+      btnAttack.addEventListener('touchend', releaseAttack, { passive: false });
+      btnAttack.addEventListener('mousedown', triggerAttack);
+      btnAttack.addEventListener('mouseup', releaseAttack);
     }
 
-    // 1. Jump Button
+    // 1. Mobile Dodge Roll Button [Q] (Runner Silhouette)
+    if (btnRoll) {
+      const triggerRoll = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (this.onRollPressed) this.onRollPressed();
+        btnRoll.classList.add('active');
+      };
+      const releaseRoll = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        btnRoll.classList.remove('active');
+      };
+      btnRoll.addEventListener('touchstart', triggerRoll, { passive: false });
+      btnRoll.addEventListener('touchend', releaseRoll, { passive: false });
+      btnRoll.addEventListener('mousedown', triggerRoll);
+      btnRoll.addEventListener('mouseup', releaseRoll);
+    }
+
+    // 2. Mobile Interact Button [E] (Hand)
+    if (btnInteract) {
+      const triggerInteract = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (this.onInteractPressed) this.onInteractPressed();
+        btnInteract.classList.add('active');
+      };
+      const releaseInteract = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        btnInteract.classList.remove('active');
+      };
+      btnInteract.addEventListener('touchstart', triggerInteract, { passive: false });
+      btnInteract.addEventListener('touchend', releaseInteract, { passive: false });
+      btnInteract.addEventListener('mousedown', triggerInteract);
+      btnInteract.addEventListener('mouseup', releaseInteract);
+    }
+
+    // 3. Jump Button [Space]
     if (btnJump) {
       const startJump = (e) => {
         e.preventDefault();
@@ -171,25 +244,73 @@ export class InputManager {
       btnJump.addEventListener('touchstart', startJump, { passive: false });
       btnJump.addEventListener('touchend', endJump, { passive: false });
       btnJump.addEventListener('touchcancel', endJump, { passive: false });
+      btnJump.addEventListener('mousedown', startJump);
+      btnJump.addEventListener('mouseup', endJump);
     }
 
-    // 2. Sprint Button (Toggle on tap)
-    if (btnSprint) {
-      btnSprint.addEventListener('touchstart', (e) => {
+    // 4. Backpack Button [I] (Leather Bag)
+    if (btnBackpack) {
+      const triggerBackpack = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        this.isTouchSprinting = !this.isTouchSprinting;
-        this.keys.ShiftLeft = this.isTouchSprinting;
-        if (this.isTouchSprinting) {
-          btnSprint.classList.add('active');
-        } else {
-          btnSprint.classList.remove('active');
-        }
-      }, { passive: false });
+        if (this.onInventoryToggled) this.onInventoryToggled();
+      };
+      btnBackpack.addEventListener('touchstart', triggerBackpack, { passive: false });
+      btnBackpack.addEventListener('click', triggerBackpack);
     }
 
-    // 3. Multi-Touch handling on window (Joystick & Camera)
-    const MAX_JOYSTICK_RADIUS = 46;
+    // 5. Quick Hotbar Slots [1], [2], [3], [4]
+    hotbarSlots.forEach((slotBtn) => {
+      const slotNum = parseInt(slotBtn.dataset.slot, 10);
+      const triggerSlot = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (this.onQuickslotPressed) this.onQuickslotPressed(slotNum);
+      };
+      slotBtn.addEventListener('touchstart', triggerSlot, { passive: false });
+      slotBtn.addEventListener('click', triggerSlot);
+    });
+
+    // 6. Mouse Drag on Joystick Zone for Desktop Testing
+    if (joystickZone) {
+      let isMouseDragging = false;
+      const MAX_JOYSTICK_RADIUS = 50;
+
+      joystickZone.addEventListener('mousedown', (e) => {
+        isMouseDragging = true;
+        const rect = joystickZone.getBoundingClientRect();
+        this.joystickCenter = {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2
+        };
+        this.updateJoystickPosition(e.clientX, e.clientY, MAX_JOYSTICK_RADIUS, joystickKnob);
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (isMouseDragging) {
+          this.updateJoystickPosition(e.clientX, e.clientY, MAX_JOYSTICK_RADIUS, joystickKnob);
+        }
+      });
+
+      const stopMouseDrag = () => {
+        if (isMouseDragging) {
+          isMouseDragging = false;
+          this.touchJoystick.x = 0;
+          this.touchJoystick.y = 0;
+          this.keys.KeyW = false;
+          this.keys.KeyS = false;
+          this.keys.KeyA = false;
+          this.keys.KeyD = false;
+          if (joystickKnob) {
+            joystickKnob.style.transform = 'translate(0px, 0px)';
+          }
+        }
+      };
+      window.addEventListener('mouseup', stopMouseDrag);
+    }
+
+    // 7. Multi-Touch handling on window (Joystick & Camera Orbit)
+    const MAX_JOYSTICK_RADIUS = 50;
 
     const onTouchStart = (e) => {
       if (this.isPaused) return;

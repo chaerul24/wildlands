@@ -918,7 +918,28 @@ export class HideoutScene {
   }
 
   onResize(width, height) {
-    this.camera.aspect = width / Math.max(1, height);
+    const aspect = width / Math.max(1, height);
+    this.camera.aspect = aspect;
+
+    if (aspect < 1.0) {
+      // Portrait mode (e.g. 390x844): Frame character in upper viewport
+      this.camera.fov = 50;
+      this.baseCamPos.set(0, 1.45, 3.75);
+      this.cameraTarget.set(0, 1.25, 0);
+    } else if (height <= 450) {
+      // Compact landscape phone (e.g. 844x390, 740x360): Keep full character centered
+      this.camera.fov = 46;
+      this.baseCamPos.set(0, 1.22, 3.4);
+      this.cameraTarget.set(0, 0.95, 0);
+    } else {
+      // Standard desktop / tablet landscape
+      this.camera.fov = 48;
+      this.baseCamPos.set(0, 1.35, 3.25);
+      this.cameraTarget.set(0, 1.0, 0);
+    }
+
+    this.camera.position.copy(this.baseCamPos);
+    this.camera.lookAt(this.cameraTarget);
     this.camera.updateProjectionMatrix();
   }
 

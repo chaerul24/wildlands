@@ -36,6 +36,7 @@ export class UIManager {
 
     this.isGameActive = false;
     this.isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    this.forceMobileControls = localStorage.getItem('wildlands_mobile_controls') === '1' || window.location.search.includes('mobile=1');
 
     this.initEvents();
     this.initFullscreen();
@@ -108,6 +109,16 @@ export class UIManager {
         if (this.callbacks.onQualityChange) {
           this.callbacks.onQualityChange(quality);
         }
+      });
+    }
+
+    const btnToggleAnalog = document.getElementById('btn-toggle-analog');
+    if (btnToggleAnalog) {
+      btnToggleAnalog.textContent = this.forceMobileControls ? '🕹️ Analog: AKTIF' : '🕹️ Analog: NONAKTIF';
+      btnToggleAnalog.addEventListener('click', () => {
+        const isForced = this.toggleForceMobileControls();
+        btnToggleAnalog.textContent = isForced ? '🕹️ Analog: AKTIF' : '🕹️ Analog: NONAKTIF';
+        this.showToast(isForced ? 'Kontrol Analog Diaktifkan' : 'Kontrol Analog Dinonaktifkan', 'info');
       });
     }
   }
@@ -225,9 +236,9 @@ export class UIManager {
         return;
       }
 
-      // Only display prompt on actual mobile phone/tablet devices in portrait orientation
+      // Display prompt on mobile devices & mobile screen ratios in portrait orientation
       const isMobileDevice = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-        (this.isTouchDevice && width <= 600 && isPortrait);
+        (width <= 640 && isPortrait);
 
       const shouldPrompt = isPortrait && isMobileDevice;
 
@@ -247,14 +258,19 @@ export class UIManager {
     if (screen.orientation && screen.orientation.addEventListener) {
       screen.orientation.addEventListener('change', checkOrientation);
     }
+    if (window.ResizeObserver) {
+      this.resizeObserver = new ResizeObserver(() => checkOrientation());
+      this.resizeObserver.observe(document.body);
+    }
 
     checkOrientation();
   }
 
   updateMobileControlsVisibility() {
     if (!this.mobileControls) return;
-    const isPortrait = window.innerHeight > window.innerWidth;
-    const shouldShow = this.isTouchDevice && this.isGameActive && !isPortrait;
+    const isMobileScreen = window.innerWidth <= 1024 || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    const isOverlayActive = this.orientationOverlay && this.orientationOverlay.classList.contains('active');
+    const shouldShow = (this.isTouchDevice || isMobileScreen || this.forceMobileControls) && this.isGameActive && !isOverlayActive;
 
     if (shouldShow) {
       this.mobileControls.classList.add('visible');
@@ -263,6 +279,13 @@ export class UIManager {
       this.mobileControls.classList.remove('visible');
       this.mobileControls.style.display = 'none';
     }
+  }
+
+  toggleForceMobileControls() {
+    this.forceMobileControls = !this.forceMobileControls;
+    localStorage.setItem('wildlands_mobile_controls', this.forceMobileControls ? '1' : '0');
+    this.updateMobileControlsVisibility();
+    return this.forceMobileControls;
   }
 
   hideStartScreen() {

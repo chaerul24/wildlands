@@ -24,7 +24,7 @@ export class NetworkManager {
   }
 
   connect(playerName, initialPosition = null) {
-    const serverUrl = import.meta.env.VITE_SERVER_URL || `http://${window.location.hostname || 'localhost'}:3001`;
+    const serverUrl = import.meta.env.VITE_SERVER_URL || (window.location.port === '5173' ? `http://${window.location.hostname || 'localhost'}:3001` : window.location.origin);
 
     this.socket = io(serverUrl, {
       reconnectionAttempts: 10,

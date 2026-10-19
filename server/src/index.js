@@ -2,14 +2,24 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 import { CONFIG } from './config.js';
 import { GameServer } from './gameServer.js';
 
 import { LOBBY_DATA } from './lobbyData.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const clientDistPath = path.resolve(__dirname, '../../client/dist');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Serve static assets from built client
+app.use(express.static(clientDistPath));
 
 app.get('/health', (req, res) => {
   res.json({
@@ -72,6 +82,56 @@ app.get('/api/news/:id', (req, res) => {
 
 app.get('/api/friends', (req, res) => {
   res.json({ friends: LOBBY_DATA.suggestedFriends });
+});
+
+// --- PERSISTENCE SAVE / LOAD ENDPOINTS ---
+const DATA_DIR = path.resolve(__dirname, '../data');
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+const PLAYER_SAVES_FILE = path.join(DATA_DIR, 'players.json');
+
+function loadPlayerSaves() {
+  try {
+    if (fs.existsSync(PLAYER_SAVES_FILE)) {
+      return JSON.parse(fs.readFileSync(PLAYER_SAVES_FILE, 'utf8'));
+    }
+  } catch (_) {}
+  return {};
+}
+
+function savePlayerSaves(data) {
+  try {
+    fs.writeFileSync(PLAYER_SAVES_FILE, JSON.stringify(data, null, 2), 'utf8');
+  } catch (_) {}
+}
+
+const PLAYER_SAVES = loadPlayerSaves();
+
+app.post('/api/player/save', (req, res) => {
+  const save = req.body;
+  if (!save || !save.playerId) {
+    return res.status(400).json({ error: 'Invalid save payload' });
+  }
+  PLAYER_SAVES[save.playerId] = {
+    ...save,
+    updatedAt: new Date().toISOString()
+  };
+  savePlayerSaves(PLAYER_SAVES);
+  res.json({ success: true, savedAt: PLAYER_SAVES[save.playerId].updatedAt });
+});
+
+app.get('/api/player/load/:playerId', (req, res) => {
+  const save = PLAYER_SAVES[req.params.playerId];
+  if (!save) {
+    return res.status(404).json({ error: 'No save found' });
+  }
+  res.json({ success: true, save });
+});
+
+// Fallback to client index.html for SPA routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(clientDistPath, 'index.html'));
 });
 
 const server = http.createServer(app);

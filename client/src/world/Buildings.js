@@ -32,7 +32,10 @@ export class Buildings {
       wallColor: 0x5a3e26, // Warm dark cedar log
       roofColor: 0x2e241c  // Dark timber shake
     });
-    this.createMarketStall(14, 2, Math.PI / 8);
+    // 3 Distinct RPG Village Shops
+    this.createWeaponShop(14, 2, Math.PI / 8);
+    this.createArmorShop(26, -18, 2.4);
+    this.createFoodShop(8, 14, -Math.PI / 6);
     this.createFarmField(34, -6, 0);
     this.createVillageWell(6, 22);
     this.createVillageBench(4.2, 21.5, Math.PI / 4);
@@ -950,6 +953,297 @@ export class Buildings {
 
     this.group.add(stall);
     this.colliders.push({ x, z, radius: 2.2, height: 3.5 });
+  }
+
+  /**
+   * 1. Toko Pedang & Senjata Mang Asep (Weapon Shop)
+   */
+  createWeaponShop(x, z, rotY = 0) {
+    const y = this.terrain.getSurfaceHeight ? this.terrain.getSurfaceHeight(x, z) : this.terrain.getHeightAt(x, z);
+    const shop = new THREE.Group();
+    shop.position.set(x, y, z);
+    shop.rotation.y = rotY;
+
+    const darkWoodMat = new THREE.MeshStandardMaterial({ color: 0x3d2919, roughness: 0.9 });
+    const woodMat = new THREE.MeshStandardMaterial({ color: 0x5c422c, roughness: 0.88 });
+    const ironMat = new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.8, roughness: 0.25 });
+    const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.85, roughness: 0.3 });
+    const canopyMat = new THREE.MeshStandardMaterial({ color: 0x7f1d1d, roughness: 0.75, side: THREE.DoubleSide });
+
+    // Counter table
+    const counterTop = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.14, 1.4), woodMat);
+    counterTop.position.set(0, 0.95, 0);
+    counterTop.castShadow = true;
+    counterTop.receiveShadow = true;
+    const counterBase = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.88, 1.2), darkWoodMat);
+    counterBase.position.set(0, 0.45, 0);
+    counterBase.castShadow = true;
+    shop.add(counterTop, counterBase);
+
+    // 4 timber corner posts
+    const postGeo = new THREE.CylinderGeometry(0.08, 0.09, 2.7, 6);
+    postGeo.translate(0, 1.35, 0);
+    [[-1.6, -0.65], [1.6, -0.65], [-1.6, 0.65], [1.6, 0.65]].forEach(([px, pz]) => {
+      const p = new THREE.Mesh(postGeo, darkWoodMat);
+      p.position.set(px, 0, pz);
+      p.castShadow = true;
+      shop.add(p);
+    });
+
+    // Crimson canvas awning canopy
+    const awning = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.08, 1.9), canopyMat);
+    awning.position.set(0, 2.7, 0.1);
+    awning.rotation.x = 0.14;
+    awning.castShadow = true;
+    shop.add(awning);
+
+    // Weapon Rack behind counter
+    const rack = new THREE.Group();
+    rack.position.set(0, 0, -1.1);
+    const rPost1 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1.8, 0.1), woodMat);
+    rPost1.position.set(-1.0, 0.9, 0);
+    const rPost2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1.8, 0.1), woodMat);
+    rPost2.position.set(1.0, 0.9, 0);
+    const rBar1 = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.08, 0.06), woodMat);
+    rBar1.position.set(0, 1.4, 0);
+    const rBar2 = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.08, 0.06), woodMat);
+    rBar2.position.set(0, 0.7, 0);
+    rack.add(rPost1, rPost2, rBar1, rBar2);
+
+    // Displayed swords on rack
+    for (let i = 0; i < 3; i++) {
+      const blade = new THREE.Mesh(new THREE.BoxGeometry(0.04, 1.1, 0.015), ironMat);
+      blade.position.set(-0.6 + i * 0.6, 1.15, 0.04);
+      const guard = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.03, 0.03), goldMat);
+      guard.position.set(-0.6 + i * 0.6, 0.75, 0.04);
+      blade.castShadow = true;
+      guard.castShadow = true;
+      rack.add(blade, guard);
+    }
+    shop.add(rack);
+
+    // Whetstone & daggers on counter
+    const whetstone = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.08, 0.18), new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.95 }));
+    whetstone.position.set(-0.8, 1.06, 0.1);
+    whetstone.castShadow = true;
+
+    const daggerBlade = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.45, 0.01), ironMat);
+    daggerBlade.rotation.z = Math.PI / 2;
+    daggerBlade.position.set(0.6, 1.04, 0.1);
+    shop.add(whetstone, daggerBlade);
+
+    // Signboard banner: crossed swords
+    const signBoard = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.4, 0.06), darkWoodMat);
+    signBoard.position.set(0, 2.85, 1.0);
+    const signBorder = new THREE.Mesh(new THREE.BoxGeometry(1.65, 0.45, 0.04), goldMat);
+    signBorder.position.set(0, 2.85, 0.99);
+    shop.add(signBoard, signBorder);
+
+    // Warm lantern
+    const lantern = new THREE.PointLight(0xf59e0b, 1.4, 8);
+    lantern.position.set(-1.5, 2.3, 0.7);
+    shop.add(lantern);
+
+    this.group.add(shop);
+    this.colliders.push({ x, z, radius: 2.3, height: 3.5 });
+  }
+
+  /**
+   * 2. Toko Zirah & Tempa Barin (Armor & Blacksmith Workshop)
+   */
+  createArmorShop(x, z, rotY = 0) {
+    const y = this.terrain.getSurfaceHeight ? this.terrain.getSurfaceHeight(x, z) : this.terrain.getHeightAt(x, z);
+    const shop = new THREE.Group();
+    shop.position.set(x, y, z);
+    shop.rotation.y = rotY;
+
+    const stoneMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.92 });
+    const sootMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.98 });
+    const logMat = new THREE.MeshStandardMaterial({ color: 0x3f2e1e, roughness: 0.9 });
+    const ironMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.85, roughness: 0.28 });
+    const shieldMat = new THREE.MeshStandardMaterial({ color: 0x1d4ed8, metalness: 0.5, roughness: 0.4 });
+    const goldMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.8, roughness: 0.3 });
+
+    // 1. Stone Smelting Forge with Chimney
+    const forgeBase = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.9, 1.5), stoneMat);
+    forgeBase.position.set(-1.4, 0.45, 0);
+    forgeBase.castShadow = true;
+    forgeBase.receiveShadow = true;
+
+    // Glowing charcoal hearth
+    const hearthBed = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.1, 1.0), sootMat);
+    hearthBed.position.set(-1.4, 0.92, 0);
+    const embers = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.08, 0.7), new THREE.MeshBasicMaterial({ color: 0xff4500 }));
+    embers.position.set(-1.4, 0.96, 0);
+
+    // Stone Hood & Chimney
+    const chimney = new THREE.Mesh(new THREE.BoxGeometry(0.8, 2.6, 0.8), stoneMat);
+    chimney.position.set(-1.4, 2.2, 0);
+    chimney.castShadow = true;
+
+    const forgeGlow = new THREE.PointLight(0xff5511, 2.2, 10);
+    forgeGlow.position.set(-1.4, 1.2, 0.2);
+    shop.add(forgeBase, hearthBed, embers, chimney, forgeGlow);
+
+    // 2. Heavy Anvil on Stump
+    const stump = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.42, 0.65, 8), logMat);
+    stump.position.set(0.6, 0.32, -0.2);
+    stump.castShadow = true;
+
+    const anvilBase = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.18, 0.32), ironMat);
+    anvilBase.position.set(0.6, 0.74, -0.2);
+    anvilBase.castShadow = true;
+
+    const anvilTop = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.16, 0.24), ironMat);
+    anvilTop.position.set(0.6, 0.88, -0.2);
+    anvilTop.castShadow = true;
+
+    const anvilHorn = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.28, 6), ironMat);
+    anvilHorn.rotation.z = -Math.PI / 2;
+    anvilHorn.position.set(0.98, 0.88, -0.2);
+    anvilHorn.castShadow = true;
+    shop.add(stump, anvilBase, anvilTop, anvilHorn);
+
+    // 3. Armor Display Rack
+    const rackGroup = new THREE.Group();
+    rackGroup.position.set(1.5, 0, 0.8);
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 1.8, 6), logMat);
+    post.position.y = 0.9;
+    const crossbar = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.06, 0.06), logMat);
+    crossbar.position.y = 1.45;
+
+    // Displayed Steel Plate Armor on rack
+    const chestPlate = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.20, 0.55, 8, 1, false, 0, Math.PI), ironMat);
+    chestPlate.position.set(0, 1.15, 0.08);
+    chestPlate.castShadow = true;
+
+    // Displayed Steel Helmet
+    const helm = new THREE.Mesh(new THREE.DodecahedronGeometry(0.18, 1), ironMat);
+    helm.position.set(0, 1.68, 0);
+    helm.castShadow = true;
+
+    // Displayed Knight Round Shield leaning
+    const shield = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.05, 12), shieldMat);
+    shield.rotation.x = 0.3;
+    shield.position.set(0.45, 0.4, 0.2);
+    const shieldBoss = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 6), goldMat);
+    shieldBoss.position.set(0.45, 0.4, 0.25);
+    shield.castShadow = true;
+
+    rackGroup.add(post, crossbar, chestPlate, helm, shield, shieldBoss);
+    shop.add(rackGroup);
+
+    // Water quenching barrel
+    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.35, 0.75, 8), logMat);
+    barrel.position.set(-0.2, 0.38, 0.8);
+    barrel.castShadow = true;
+    const water = new THREE.Mesh(new THREE.CircleGeometry(0.28, 8), new THREE.MeshStandardMaterial({ color: 0x1e3a8a, roughness: 0.1, metalness: 0.2 }));
+    water.rotation.x = -Math.PI / 2;
+    water.position.set(-0.2, 0.74, 0.8);
+    shop.add(barrel, water);
+
+    this.group.add(shop);
+    this.colliders.push({ x, z, radius: 2.6, height: 3.5 });
+  }
+
+  /**
+   * 3. Toko Makanan & Perbekalan Ibu Mina (Bakery & Food Pavilion)
+   */
+  createFoodShop(x, z, rotY = 0) {
+    const y = this.terrain.getSurfaceHeight ? this.terrain.getSurfaceHeight(x, z) : this.terrain.getHeightAt(x, z);
+    const shop = new THREE.Group();
+    shop.position.set(x, y, z);
+    shop.rotation.y = rotY;
+
+    const woodMat = new THREE.MeshStandardMaterial({ color: 0x6e4a29, roughness: 0.88 });
+    const darkWoodMat = new THREE.MeshStandardMaterial({ color: 0x3d2919, roughness: 0.92 });
+    const canopyMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.75, side: THREE.DoubleSide });
+    const breadMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.8 });
+    const meatMat = new THREE.MeshStandardMaterial({ color: 0x831843, roughness: 0.65 });
+    const ironMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.7, roughness: 0.4 });
+    const appleMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.5 });
+
+    // Counter table
+    const table = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.14, 1.4), woodMat);
+    table.position.set(0, 0.95, 0);
+    table.castShadow = true;
+    table.receiveShadow = true;
+    const tableBase = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.88, 1.2), darkWoodMat);
+    tableBase.position.set(0, 0.45, 0);
+    tableBase.castShadow = true;
+    shop.add(table, tableBase);
+
+    // 4 timber corner posts
+    const postGeo = new THREE.CylinderGeometry(0.08, 0.09, 2.7, 6);
+    postGeo.translate(0, 1.35, 0);
+    [[-1.6, -0.65], [1.6, -0.65], [-1.6, 0.65], [1.6, 0.65]].forEach(([px, pz]) => {
+      const p = new THREE.Mesh(postGeo, darkWoodMat);
+      p.position.set(px, 0, pz);
+      p.castShadow = true;
+      shop.add(p);
+    });
+
+    // Forest green striped awning
+    const awning = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.08, 1.9), canopyMat);
+    awning.position.set(0, 2.7, 0.1);
+    awning.rotation.x = 0.14;
+    awning.castShadow = true;
+    shop.add(awning);
+
+    // 1. Fresh Bread loaves on wooden tray
+    const tray = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.05, 0.5), darkWoodMat);
+    tray.position.set(-0.9, 1.05, 0);
+    tray.castShadow = true;
+    shop.add(tray);
+
+    for (let i = 0; i < 3; i++) {
+      const loaf = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.28, 8), breadMat);
+      loaf.rotation.x = Math.PI / 2;
+      loaf.position.set(-1.15 + i * 0.25, 1.15, 0);
+      loaf.castShadow = true;
+      shop.add(loaf);
+    }
+
+    // 2. Roasted meat skewers on stone platter
+    const meatPlatter = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.3, 0.04, 8), ironMat);
+    meatPlatter.position.set(0, 1.04, 0.1);
+    shop.add(meatPlatter);
+
+    for (let i = 0; i < 2; i++) {
+      const meat = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.12, 0.32), meatMat);
+      meat.position.set(-0.08 + i * 0.16, 1.14, 0.1);
+      meat.castShadow = true;
+      shop.add(meat);
+    }
+
+    // 3. Soup Cauldron with bubbling broth
+    const cauldron = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.18, 0.35, 10), ironMat);
+    cauldron.position.set(0.9, 1.20, 0);
+    cauldron.castShadow = true;
+    const broth = new THREE.Mesh(new THREE.CircleGeometry(0.22, 10), new THREE.MeshStandardMaterial({ color: 0x9a3412, roughness: 0.2 }));
+    broth.rotation.x = -Math.PI / 2;
+    broth.position.set(0.9, 1.34, 0);
+    shop.add(cauldron, broth);
+
+    // 4. Apple Crates on ground
+    const crate = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.3, 0.45), woodMat);
+    crate.position.set(1.4, 0.2, 0.9);
+    crate.castShadow = true;
+    shop.add(crate);
+
+    for (let i = 0; i < 4; i++) {
+      const apple = new THREE.Mesh(new THREE.DodecahedronGeometry(0.08, 0), appleMat);
+      apple.position.set(1.25 + (i % 2) * 0.2, 0.38, 0.8 + Math.floor(i / 2) * 0.2);
+      shop.add(apple);
+    }
+
+    // Warm food stall light
+    const lantern = new THREE.PointLight(0xf59e0b, 1.4, 8);
+    lantern.position.set(-1.5, 2.3, 0.7);
+    shop.add(lantern);
+
+    this.group.add(shop);
+    this.colliders.push({ x, z, radius: 2.3, height: 3.5 });
   }
 
   /**

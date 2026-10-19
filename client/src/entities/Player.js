@@ -21,6 +21,7 @@ export class Player {
     this.yaw = 0;
     this.targetYaw = 0;
     this.attackTimer = 0;
+    this.rollTimer = 0;
 
     // Movement constants (comfortable realistic human pace)
     this.WALK_SPEED = 3.6;
@@ -47,9 +48,10 @@ export class Player {
     this.isGrounded = true;
   }
 
-  attack() {
+  attack(attackType = 'attack1') {
     this.attackTimer = 0.55;
-    this.animState = 'attack';
+    this.attackType = attackType;
+    this.animState = attackType;
   }
 
   update(input, cameraOrYaw, dt) {
@@ -186,9 +188,12 @@ export class Player {
     // 4. Update Animation State
     const horizontalSpeed = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.z * this.velocity.z);
 
-    if (this.attackTimer > 0) {
+    if (this.rollTimer > 0) {
+      this.rollTimer -= dt;
+      this.animState = 'roll';
+    } else if (this.attackTimer > 0) {
       this.attackTimer -= dt;
-      this.animState = 'attack';
+      this.animState = this.attackType || 'attack1';
     } else if (!this.isGrounded) {
       this.animState = this.jumpType || ((horizontalSpeed > 0.8 || isMoving) ? 'jump_run' : 'jump_idle');
     } else {

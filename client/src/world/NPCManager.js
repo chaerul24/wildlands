@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { lerpAngle } from '../utils/MathUtils.js';
+import { CharacterFactory } from '../entities/CharacterFactory.js';
 
 // Pre-configured mappings from AI states to GLTF Animation Clips
 const STATE_ANIM_MAP = {
@@ -29,6 +30,7 @@ const STATE_ANIM_MAP = {
   wave_greeting: 'Cheer',
   talk_active: 'Cheer',
   talk_listen: 'Unarmed_Idle',
+  talking: 'Interact',
 
   // Sweeping & Guard
   sweeping: '1H_Melee_Attack_Slice_Horizontal',
@@ -69,6 +71,14 @@ export class NPCCharacter {
     this.isSitting = config.isSitting || false;
     this.sitSeatHeight = config.sitSeatHeight || 0.48;
 
+    // Talking & Dialogue Interaction State
+    this.isTalking = false;
+    this.talkingPlayerPos = null;
+    this.previousState = null;
+    this.previousRotY = this.rotationY;
+    this.headBone = null;
+    this.chestBone = null;
+
     // Animation & 3D Model state
     this.isGLTFLoaded = false;
     this.model = null;
@@ -89,6 +99,38 @@ export class NPCCharacter {
 
     // Initial ground alignment
     this.alignToGround();
+  }
+
+  startTalking(playerPos) {
+    if (this.isTalking) return;
+    this.isTalking = true;
+    this.previousState = this.state;
+    this.previousRotY = this.targetRotationY;
+    this.state = 'talking';
+    this.stateTimer = 0;
+    if (playerPos) {
+      this.talkingPlayerPos = new THREE.Vector3(playerPos.x, playerPos.y, playerPos.z);
+      const dx = playerPos.x - this.position.x;
+      const dz = playerPos.z - this.position.z;
+      this.targetRotationY = Math.atan2(dx, dz);
+    }
+    const clipName = this.getClipForState('talking');
+    this.playAction(clipName, 0.2);
+  }
+
+  stopTalking() {
+    if (!this.isTalking) return;
+    this.isTalking = false;
+    this.state = this.previousState || 'idle';
+    this.stateTimer = 0;
+    this.talkingPlayerPos = null;
+    if (this.previousRotY !== undefined) {
+      this.targetRotationY = this.previousRotY;
+    } else if (this.config.initialRotY !== undefined) {
+      this.targetRotationY = this.config.initialRotY;
+    }
+    const clipName = this.getClipForState(this.state);
+    this.playAction(clipName, 0.25);
   }
 
   alignToGround() {
@@ -115,32 +157,13 @@ export class NPCCharacter {
     const model = SkeletonUtils.clone(gltf.scene);
     this.model = model;
 
-    // 2. Compute true dimensions and normalize scale to 1.8m height
-    const box = new THREE.Box3().setFromObject(model);
-    const size = new THREE.Vector3();
-    box.getSize(size);
-    const targetHeight = (this.config.scale || 1.0) * 1.80;
-    const scale = targetHeight / Math.max(0.1, size.y);
-    model.scale.set(scale, scale, scale);
-
-    // Ensure model faces forward in movement direction (natural +Z)
-    model.rotation.y = 0;
-
-    // Recompute grounded box
-    box.setFromObject(model);
-    model.position.y = -box.min.y;
-
-    // 3. Shadow casting and material configuration
-    model.traverse((child) => {
-      if (child.isMesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-        if (child.material) {
-          child.material.roughness = 0.85;
-          child.material.metalness = 0.05;
-        }
-      }
-    });
+    // 2. Standardize model dimensions, grounding, materials, and sockets using CharacterFactory
+    const targetHeight = (this.config.scale || 1.0) * CharacterFactory.STANDARD_HEIGHT;
+    const stdInfo = CharacterFactory.standardizeModel(model, targetHeight);
+    if (stdInfo && stdInfo.sockets) {
+      this.headBone = stdInfo.sockets.head;
+      this.chestBone = stdInfo.sockets.chest;
+    }
 
     // 4. Configure built-in weapon accessories (show/hide based on job desk)
     this.configureModelWeapons(model);
@@ -294,6 +317,7 @@ export class NPCCharacter {
   }
 
   createNameplate() {
+    if (typeof document === 'undefined') return;
     const canvas = document.createElement('canvas');
     canvas.width = 300;
     canvas.height = 76;
@@ -374,8 +398,25 @@ export class NPCCharacter {
     this.stateTimer += dt;
     this.animTime += dt;
 
-    // 1. Run AI State Machine Transitions
-    this.updateAI(dt, elapsedTime, playerPos);
+    // 1. Run AI or Talking Handling
+    if (this.isTalking) {
+      if (this.talkingPlayerPos) {
+        const dx = this.talkingPlayerPos.x - this.position.x;
+        const dz = this.talkingPlayerPos.z - this.position.z;
+        this.targetRotationY = Math.atan2(dx, dz);
+        // Distance check: auto stop if player walks too far
+        if (Math.hypot(dx, dz) > 5.5) {
+          this.stopTalking();
+        }
+      }
+      // Procedural speaking gesture & subtle head nod
+      if (this.headBone) {
+        this.headBone.rotation.x = Math.sin(this.animTime * 3.2) * 0.08;
+        this.headBone.rotation.y = Math.sin(this.animTime * 1.6) * 0.06;
+      }
+    } else {
+      this.updateAI(dt, elapsedTime, playerPos);
+    }
 
     // 2. Play Appropriate Character Animation
     const targetClip = this.getClipForState(this.state);
@@ -448,7 +489,10 @@ export class NPCCharacter {
         break;
 
       case 'merchant':
-        // Behind counter: organizes fruits, waves warmly to nearby players
+      case 'merchant_weapon':
+      case 'merchant_armor':
+      case 'merchant_food':
+        // Behind counter: organizes wares, waves warmly to nearby players
         if (distToPlayer < 7.0) {
           this.state = 'wave_greeting';
           const angleToPlayer = Math.atan2(playerPos.x - this.position.x, playerPos.z - this.position.z);
@@ -657,17 +701,45 @@ export class NPCManager {
         ]
       },
 
-      // 3. Mang Asep - Pedagang Pasar Desa
+      // 3. Mang Asep - Pedagang Pedang & Senjata
       {
         id: 'npc_asep',
         name: 'Mang Asep',
-        title: '🏪 Pedagang Pasar',
-        role: 'merchant',
-        modelType: 'rogue', // Merchant with traveling vest
+        title: '⚔️ Toko Pedang & Senjata',
+        role: 'merchant_weapon',
+        modelType: 'rogue', // Weapon smith / merchant with vest
         badgeColor: '#f59e0b',
         scale: 1.0,
         initialPos: { x: 14.1, z: 1.8 },
         initialRotY: 0.4,
+        initialState: 'merchant_work'
+      },
+
+      // 3b. Pandai Besi Barin - Toko Zirah & Perlengkapan Tempur
+      {
+        id: 'npc_barin',
+        name: 'Barin',
+        title: '🛡️ Pandai Besi & Toko Zirah',
+        role: 'merchant_armor',
+        modelType: 'barbarian', // Muscular smith in rugged leather/apron
+        badgeColor: '#ea580c',
+        scale: 1.05,
+        initialPos: { x: 26.0, z: -16.5 },
+        initialRotY: 2.4,
+        initialState: 'merchant_work'
+      },
+
+      // 3c. Ibu Mina - Toko Makanan & Perbekalan Lembah
+      {
+        id: 'npc_mina',
+        name: 'Ibu Mina',
+        title: '🍞 Toko Makanan & Perbekalan',
+        role: 'merchant_food',
+        modelType: 'rogue_hooded', // Provisioner in herbalist traveling attire
+        badgeColor: '#10b981',
+        scale: 0.96,
+        initialPos: { x: 8.0, z: 13.8 },
+        initialRotY: -0.2,
         initialState: 'merchant_work'
       },
 
