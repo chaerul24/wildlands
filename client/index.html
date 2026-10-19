@@ -53,6 +53,9 @@
           <button class="top-nav-item" data-tab="profile" type="button">
             <span>PROFILE</span>
           </button>
+          <button class="top-nav-item" id="btn-nav-assets" type="button" title="Galeri Aset & Manifest Game">
+            <span>📦 ASET (54)</span>
+          </button>
         </nav>
 
         <!-- Right Side: Player Profile Snippet & Currencies -->
@@ -579,6 +582,39 @@
             <div class="legend-item"><span class="legend-dot quest"></span> Target Misi (Rumah Lapuk)</div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- RPG ASSET PREVIEW & MANIFEST MODAL -->
+    <div id="rpg-asset-preview-modal" class="rpg-shop-overlay" style="display: none; z-index: 10000;">
+      <div class="rpg-shop-card" style="max-width: 960px; max-height: 88vh; display: flex; flex-direction: column;">
+        <header class="shop-header">
+          <div class="shop-header-title-wrap">
+            <span class="shop-header-icon" id="asset-header-icon">📦</span>
+            <div>
+              <h2 class="shop-header-title">GALERI ASET GAME & MANIFEST RESMI</h2>
+              <span class="shop-header-subtitle">54 Aset 3D, Audio & Tekstur Terpasang (CC0 & CC-BY 4.0)</span>
+            </div>
+          </div>
+          <button id="btn-close-asset-modal" class="shop-close-btn interactive" type="button" aria-label="Tutup Galeri">✕</button>
+        </header>
+
+        <!-- Category Filter Tabs -->
+        <div class="shop-nav-tabs" id="asset-filter-tabs" style="overflow-x: auto; flex-shrink: 0;">
+          <button class="shop-tab-btn active" data-cat="all" type="button">🌟 Semua (54)</button>
+          <button class="shop-tab-btn" data-cat="characters" type="button">🧙 Karakter (8)</button>
+          <button class="shop-tab-btn" data-cat="enemies" type="button">💀 Musuh & Monster (6)</button>
+          <button class="shop-tab-btn" data-cat="weapons" type="button">⚔️ Senjata & Zirah (6)</button>
+          <button class="shop-tab-btn" data-cat="shops" type="button">🏪 Toko & Desa (7)</button>
+          <button class="shop-tab-btn" data-cat="food" type="button">🍞 Makanan (5)</button>
+          <button class="shop-tab-btn" data-cat="props" type="button">📦 Loot & Props (8)</button>
+          <button class="shop-tab-btn" data-cat="audio" type="button">🔊 Audio (5)</button>
+          <button class="shop-tab-btn" data-cat="textures" type="button">🎨 Tekstur (3)</button>
+        </div>
+
+        <main class="shop-body" id="asset-grid" style="overflow-y: auto; flex: 1; padding: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px;">
+          <!-- Populated by AssetPreviewUI -->
+        </main>
       </div>
     </div>
 

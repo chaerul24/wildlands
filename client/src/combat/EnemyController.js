@@ -7,6 +7,7 @@ export class EnemyController {
     this.scene = scene;
     this.terrain = terrain;
     this.buildings = buildings;
+    this.config = config || {};
 
     this.id = config.id || 'warrior_marauder_01';
     this.name = config.name || 'Warrior Marauder';
@@ -83,7 +84,12 @@ export class EnemyController {
 
   loadWarriorModel() {
     const loader = new GLTFLoader();
-    const tryUrls = ['/models/enemies/Warrior.gltf', '/warrior.gltf'];
+    const tryUrls = [
+      this.config.modelUrl,
+      '/assets/characters/enemies/warrior_marauder.gltf',
+      '/models/enemies/Warrior.gltf',
+      '/warrior.gltf'
+    ].filter(Boolean);
 
     const tryLoad = (idx) => {
       if (idx >= tryUrls.length) return;
@@ -282,10 +288,19 @@ export class EnemyController {
     // Resolve clip action with fallback
     let nextAction = this.actions[name] || this.actions[name.toLowerCase()];
     if (!nextAction) {
-      if (name.includes('Attack')) nextAction = this.actions['Sword_Attack'] || this.actions['Punch'];
-      else if (name === 'Run') nextAction = this.actions['Run'] || this.actions['Run_Weapon'] || this.actions['Walk'];
-      else if (name === 'Walk') nextAction = this.actions['Walk'];
-      else nextAction = this.actions['Idle'] || this.actions['Idle_Weapon'];
+      if (name.includes('Attack') || name.includes('attack')) {
+        nextAction = this.actions['attack-melee-right'] || this.actions['1h_melee_attack_slice_horizontal'] || this.actions['Sword_Attack'] || this.actions['Punch'] || this.actions['attack'];
+      } else if (name.includes('Run') || name.includes('run')) {
+        nextAction = this.actions['sprint'] || this.actions['Run'] || this.actions['Run_Weapon'] || this.actions['Running_A'] || this.actions['Walk'];
+      } else if (name.includes('Walk') || name.includes('walk')) {
+        nextAction = this.actions['walk'] || this.actions['Walking_A'] || this.actions['Walk'];
+      } else if (name.includes('Death') || name.includes('death') || name.includes('Die')) {
+        nextAction = this.actions['die'] || this.actions['Death'] || this.actions['Death_A'];
+      } else if (name.includes('Hit') || name.includes('Hurt')) {
+        nextAction = this.actions['hitreact'] || this.actions['RecieveHit'] || this.actions['Hit_A'];
+      } else {
+        nextAction = this.actions['idle'] || this.actions['Idle'] || this.actions['Idle_Weapon'];
+      }
     }
 
     if (!nextAction) return;

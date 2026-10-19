@@ -1,0 +1,2074 @@
+{
+  "generatedAt": "2026-10-19T23:33:54.448Z",
+  "game": "Wildlands 3D RPG",
+  "assetRoot": "/assets",
+  "totalAssets": 54,
+  "totalSizeBytes": 40261131,
+  "categories": {
+    "characters": 8,
+    "enemies": 6,
+    "shops": 3,
+    "village": 4,
+    "interior": 3,
+    "weapons": 5,
+    "armor": 1,
+    "food": 5,
+    "loot": 3,
+    "props": 5,
+    "vegetation": 2,
+    "rocks": 1,
+    "textures": 3,
+    "audio": 5
+  },
+  "assets": [
+    {
+      "id": "char_player_warrior",
+      "name": "Player Warrior (Human Standard 1.82m)",
+      "category": "characters",
+      "path": "/assets/characters/player/warrior.gltf",
+      "source": "Quaternius Animated RPG Characters",
+      "license": "CC0 1.0 Universal",
+      "format": "gltf",
+      "size": 3035392,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "Death",
+          "Idle",
+          "Idle_Attacking",
+          "Idle_Weapon",
+          "PickUp",
+          "Punch",
+          "RecieveHit",
+          "Roll",
+          "Run",
+          "Run_Weapon",
+          "Sword_Attack",
+          "Sword_Attack2",
+          "Walk"
+        ],
+        "meshes": [
+          "_ncl1_29.005",
+          "_ncl1_29.002",
+          "_ncl1_29.000",
+          "Cylinder.001",
+          "_ncl1_29.001"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "char_npc_barbarian",
+      "name": "Village Barbarian Blacksmith Guard",
+      "category": "characters",
+      "path": "/assets/characters/npcs/barbarian.glb",
+      "source": "Quaternius Animated RPG Characters",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 3613268,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "1H_Melee_Attack_Chop",
+          "1H_Melee_Attack_Slice_Diagonal",
+          "1H_Melee_Attack_Slice_Horizontal",
+          "1H_Melee_Attack_Stab",
+          "1H_Ranged_Aiming",
+          "1H_Ranged_Reload",
+          "1H_Ranged_Shoot",
+          "1H_Ranged_Shooting",
+          "2H_Melee_Attack_Chop",
+          "2H_Melee_Attack_Slice",
+          "2H_Melee_Attack_Spin",
+          "2H_Melee_Attack_Spinning",
+          "2H_Melee_Attack_Stab",
+          "2H_Melee_Idle",
+          "2H_Ranged_Aiming",
+          "2H_Ranged_Reload",
+          "2H_Ranged_Shoot",
+          "2H_Ranged_Shooting",
+          "Block",
+          "Block_Attack",
+          "Block_Hit",
+          "Blocking",
+          "Cheer",
+          "Death_A",
+          "Death_A_Pose",
+          "Death_B",
+          "Death_B_Pose",
+          "Dodge_Backward",
+          "Dodge_Forward",
+          "Dodge_Left",
+          "Dodge_Right",
+          "Dualwield_Melee_Attack_Chop",
+          "Dualwield_Melee_Attack_Slice",
+          "Dualwield_Melee_Attack_Stab",
+          "Hit_A",
+          "Hit_B",
+          "Idle",
+          "Interact",
+          "Jump_Full_Long",
+          "Jump_Full_Short",
+          "Jump_Idle",
+          "Jump_Land",
+          "Jump_Start",
+          "Lie_Down",
+          "Lie_Idle",
+          "Lie_Pose",
+          "Lie_StandUp",
+          "PickUp",
+          "Running_A",
+          "Running_B",
+          "Running_Strafe_Left",
+          "Running_Strafe_Right",
+          "Sit_Chair_Down",
+          "Sit_Chair_Idle",
+          "Sit_Chair_Pose",
+          "Sit_Chair_StandUp",
+          "Sit_Floor_Down",
+          "Sit_Floor_Idle",
+          "Sit_Floor_Pose",
+          "Sit_Floor_StandUp",
+          "Spellcast_Long",
+          "Spellcast_Raise",
+          "Spellcast_Shoot",
+          "Spellcasting",
+          "T-Pose",
+          "Throw",
+          "Unarmed_Idle",
+          "Unarmed_Melee_Attack_Kick",
+          "Unarmed_Melee_Attack_Punch_A",
+          "Unarmed_Melee_Attack_Punch_B",
+          "Unarmed_Pose",
+          "Use_Item",
+          "Walking_A",
+          "Walking_B",
+          "Walking_Backwards",
+          "Walking_C"
+        ],
+        "meshes": [
+          "Cube.160",
+          "Cube.001",
+          "Cylinder.404",
+          "Cube.12900",
+          "Cube.222",
+          "Cylinder.061",
+          "Cube.166",
+          "Plane.006",
+          "Cube.161",
+          "PrototypePete_body.022",
+          "Cube.167",
+          "Cube.165",
+          "Cube.163"
+        ],
+        "nodes": [
+          "1H_Axe_Offhand",
+          "Barbarian_Round_Shield",
+          "handslot.l",
+          "hand.l",
+          "wrist.l",
+          "lowerarm.l",
+          "upperarm.l",
+          "1H_Axe",
+          "2H_Axe",
+          "Mug",
+          "handslot.r",
+          "hand.r",
+          "wrist.r",
+          "lowerarm.r",
+          "upperarm.r",
+          "Barbarian_Hat",
+          "head",
+          "Barbarian_Cape",
+          "chest",
+          "spine",
+          "toes.l",
+          "foot.l",
+          "lowerleg.l",
+          "upperleg.l",
+          "toes.r",
+          "foot.r",
+          "lowerleg.r",
+          "upperleg.r",
+          "hips",
+          "kneeIK.l",
+          "heelIK.l",
+          "IK-foot.l",
+          "control-foot-roll.l",
+          "IK-toe.l",
+          "control-heel-roll.l",
+          "control-toe-roll.l",
+          "kneeIK.r",
+          "heelIK.r",
+          "IK-foot.r",
+          "control-foot-roll.r",
+          "IK-toe.r",
+          "control-heel-roll.r",
+          "control-toe-roll.r",
+          "elbowIK.l",
+          "handIK.l",
+          "elbowIK.r",
+          "handIK.r",
+          "root",
+          "Barbarian_ArmLeft",
+          "Barbarian_ArmRight",
+          "Barbarian_Body",
+          "Barbarian_Head",
+          "Barbarian_LegLeft",
+          "Barbarian_LegRight",
+          "Rig"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "char_npc_knight",
+      "name": "Village Honor Guard (Penjaga Rian)",
+      "category": "characters",
+      "path": "/assets/characters/npcs/knight.glb",
+      "source": "Quaternius Animated RPG Characters",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 3659532,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "1H_Melee_Attack_Chop",
+          "1H_Melee_Attack_Slice_Diagonal",
+          "1H_Melee_Attack_Slice_Horizontal",
+          "1H_Melee_Attack_Stab",
+          "1H_Ranged_Aiming",
+          "1H_Ranged_Reload",
+          "1H_Ranged_Shoot",
+          "1H_Ranged_Shooting",
+          "2H_Melee_Attack_Chop",
+          "2H_Melee_Attack_Slice",
+          "2H_Melee_Attack_Spin",
+          "2H_Melee_Attack_Spinning",
+          "2H_Melee_Attack_Stab",
+          "2H_Melee_Idle",
+          "2H_Ranged_Aiming",
+          "2H_Ranged_Reload",
+          "2H_Ranged_Shoot",
+          "2H_Ranged_Shooting",
+          "Block",
+          "Block_Attack",
+          "Block_Hit",
+          "Blocking",
+          "Cheer",
+          "Death_A",
+          "Death_A_Pose",
+          "Death_B",
+          "Death_B_Pose",
+          "Dodge_Backward",
+          "Dodge_Forward",
+          "Dodge_Left",
+          "Dodge_Right",
+          "Dualwield_Melee_Attack_Chop",
+          "Dualwield_Melee_Attack_Slice",
+          "Dualwield_Melee_Attack_Stab",
+          "Hit_A",
+          "Hit_B",
+          "Idle",
+          "Interact",
+          "Jump_Full_Long",
+          "Jump_Full_Short",
+          "Jump_Idle",
+          "Jump_Land",
+          "Jump_Start",
+          "Lie_Down",
+          "Lie_Idle",
+          "Lie_Pose",
+          "Lie_StandUp",
+          "PickUp",
+          "Running_A",
+          "Running_B",
+          "Running_Strafe_Left",
+          "Running_Strafe_Right",
+          "Sit_Chair_Down",
+          "Sit_Chair_Idle",
+          "Sit_Chair_Pose",
+          "Sit_Chair_StandUp",
+          "Sit_Floor_Down",
+          "Sit_Floor_Idle",
+          "Sit_Floor_Pose",
+          "Sit_Floor_StandUp",
+          "Spellcast_Long",
+          "Spellcast_Raise",
+          "Spellcast_Shoot",
+          "Spellcasting",
+          "T-Pose",
+          "Throw",
+          "Unarmed_Idle",
+          "Unarmed_Melee_Attack_Kick",
+          "Unarmed_Melee_Attack_Punch_A",
+          "Unarmed_Melee_Attack_Punch_B",
+          "Unarmed_Pose",
+          "Use_Item",
+          "Walking_A",
+          "Walking_B",
+          "Walking_Backwards",
+          "Walking_C"
+        ],
+        "meshes": [
+          "Cube.125",
+          "Cube.003",
+          "Cylinder.280",
+          "Cylinder.005",
+          "Cylinder.010",
+          "Cylinder.022",
+          "Cube.11839",
+          "Cube.12993",
+          "Cube.124",
+          "Plane.004",
+          "Cube.126",
+          "PrototypePete_body.020",
+          "PrototypePete_head.001",
+          "Cube.128",
+          "Cube.127"
+        ],
+        "nodes": [
+          "1H_Sword_Offhand",
+          "Badge_Shield",
+          "Rectangle_Shield",
+          "Round_Shield",
+          "Spike_Shield",
+          "handslot.l",
+          "hand.l",
+          "wrist.l",
+          "lowerarm.l",
+          "upperarm.l",
+          "1H_Sword",
+          "2H_Sword",
+          "handslot.r",
+          "hand.r",
+          "wrist.r",
+          "lowerarm.r",
+          "upperarm.r",
+          "Knight_Helmet",
+          "head",
+          "Knight_Cape",
+          "chest",
+          "spine",
+          "toes.l",
+          "foot.l",
+          "lowerleg.l",
+          "upperleg.l",
+          "toes.r",
+          "foot.r",
+          "lowerleg.r",
+          "upperleg.r",
+          "hips",
+          "kneeIK.l",
+          "heelIK.l",
+          "IK-foot.l",
+          "control-foot-roll.l",
+          "IK-toe.l",
+          "control-heel-roll.l",
+          "control-toe-roll.l",
+          "kneeIK.r",
+          "heelIK.r",
+          "IK-foot.r",
+          "control-foot-roll.r",
+          "IK-toe.r",
+          "control-heel-roll.r",
+          "control-toe-roll.r",
+          "elbowIK.l",
+          "handIK.l",
+          "elbowIK.r",
+          "handIK.r",
+          "root",
+          "Knight_ArmLeft",
+          "Knight_ArmRight",
+          "Knight_Body",
+          "Knight_Head",
+          "Knight_LegLeft",
+          "Knight_LegRight",
+          "Rig"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "char_npc_mage",
+      "name": "Valley Mystic & Herbalist (Dewi)",
+      "category": "characters",
+      "path": "/assets/characters/npcs/mage.glb",
+      "source": "Quaternius Animated RPG Characters",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 3589240,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "1H_Melee_Attack_Chop",
+          "1H_Melee_Attack_Slice_Diagonal",
+          "1H_Melee_Attack_Slice_Horizontal",
+          "1H_Melee_Attack_Stab",
+          "1H_Ranged_Aiming",
+          "1H_Ranged_Reload",
+          "1H_Ranged_Shoot",
+          "1H_Ranged_Shooting",
+          "2H_Melee_Attack_Chop",
+          "2H_Melee_Attack_Slice",
+          "2H_Melee_Attack_Spin",
+          "2H_Melee_Attack_Spinning",
+          "2H_Melee_Attack_Stab",
+          "2H_Melee_Idle",
+          "2H_Ranged_Aiming",
+          "2H_Ranged_Reload",
+          "2H_Ranged_Shoot",
+          "2H_Ranged_Shooting",
+          "Block",
+          "Block_Attack",
+          "Block_Hit",
+          "Blocking",
+          "Cheer",
+          "Death_A",
+          "Death_A_Pose",
+          "Death_B",
+          "Death_B_Pose",
+          "Dodge_Backward",
+          "Dodge_Forward",
+          "Dodge_Left",
+          "Dodge_Right",
+          "Dualwield_Melee_Attack_Chop",
+          "Dualwield_Melee_Attack_Slice",
+          "Dualwield_Melee_Attack_Stab",
+          "Hit_A",
+          "Hit_B",
+          "Idle",
+          "Interact",
+          "Jump_Full_Long",
+          "Jump_Full_Short",
+          "Jump_Idle",
+          "Jump_Land",
+          "Jump_Start",
+          "Lie_Down",
+          "Lie_Idle",
+          "Lie_Pose",
+          "Lie_StandUp",
+          "PickUp",
+          "Running_A",
+          "Running_B",
+          "Running_Strafe_Left",
+          "Running_Strafe_Right",
+          "Sit_Chair_Down",
+          "Sit_Chair_Idle",
+          "Sit_Chair_Pose",
+          "Sit_Chair_StandUp",
+          "Sit_Floor_Down",
+          "Sit_Floor_Idle",
+          "Sit_Floor_Pose",
+          "Sit_Floor_StandUp",
+          "Spellcast_Long",
+          "Spellcast_Raise",
+          "Spellcast_Shoot",
+          "Spellcasting",
+          "T-Pose",
+          "Throw",
+          "Unarmed_Idle",
+          "Unarmed_Melee_Attack_Kick",
+          "Unarmed_Melee_Attack_Punch_A",
+          "Unarmed_Melee_Attack_Punch_B",
+          "Unarmed_Pose",
+          "Use_Item",
+          "Walking_A",
+          "Walking_B",
+          "Walking_Backwards",
+          "Walking_C"
+        ],
+        "meshes": [
+          "Cube.157",
+          "Cube.12901",
+          "Cube.12902",
+          "Cylinder.018",
+          "Cylinder.039",
+          "Cube.156",
+          "Plane.030",
+          "Cube.158",
+          "Cube.155",
+          "Cube.159",
+          "Cube.153",
+          "Cube.154"
+        ],
+        "nodes": [
+          "Spellbook",
+          "Spellbook_open",
+          "handslot.l",
+          "hand.l",
+          "wrist.l",
+          "lowerarm.l",
+          "upperarm.l",
+          "1H_Wand",
+          "2H_Staff",
+          "handslot.r",
+          "hand.r",
+          "wrist.r",
+          "lowerarm.r",
+          "upperarm.r",
+          "Mage_Hat",
+          "head",
+          "Mage_Cape",
+          "chest",
+          "spine",
+          "toes.l",
+          "foot.l",
+          "lowerleg.l",
+          "upperleg.l",
+          "toes.r",
+          "foot.r",
+          "lowerleg.r",
+          "upperleg.r",
+          "hips",
+          "kneeIK.l",
+          "heelIK.l",
+          "IK-foot.l",
+          "control-foot-roll.l",
+          "IK-toe.l",
+          "control-heel-roll.l",
+          "control-toe-roll.l",
+          "kneeIK.r",
+          "heelIK.r",
+          "IK-foot.r",
+          "control-foot-roll.r",
+          "IK-toe.r",
+          "control-heel-roll.r",
+          "control-toe-roll.r",
+          "elbowIK.l",
+          "handIK.l",
+          "elbowIK.r",
+          "handIK.r",
+          "root",
+          "Mage_ArmLeft",
+          "Mage_ArmRight",
+          "Mage_Body",
+          "Mage_Head",
+          "Mage_LegLeft",
+          "Mage_LegRight",
+          "Rig"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "char_npc_rogue",
+      "name": "Village Merchant (Mang Asep)",
+      "category": "characters",
+      "path": "/assets/characters/npcs/rogue.glb",
+      "source": "Quaternius Animated RPG Characters",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 3616284,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "1H_Melee_Attack_Chop",
+          "1H_Melee_Attack_Slice_Diagonal",
+          "1H_Melee_Attack_Slice_Horizontal",
+          "1H_Melee_Attack_Stab",
+          "1H_Ranged_Aiming",
+          "1H_Ranged_Reload",
+          "1H_Ranged_Shoot",
+          "1H_Ranged_Shooting",
+          "2H_Melee_Attack_Chop",
+          "2H_Melee_Attack_Slice",
+          "2H_Melee_Attack_Spin",
+          "2H_Melee_Attack_Spinning",
+          "2H_Melee_Attack_Stab",
+          "2H_Melee_Idle",
+          "2H_Ranged_Aiming",
+          "2H_Ranged_Reload",
+          "2H_Ranged_Shoot",
+          "2H_Ranged_Shooting",
+          "Block",
+          "Block_Attack",
+          "Block_Hit",
+          "Blocking",
+          "Cheer",
+          "Death_A",
+          "Death_A_Pose",
+          "Death_B",
+          "Death_B_Pose",
+          "Dodge_Backward",
+          "Dodge_Forward",
+          "Dodge_Left",
+          "Dodge_Right",
+          "Dualwield_Melee_Attack_Chop",
+          "Dualwield_Melee_Attack_Slice",
+          "Dualwield_Melee_Attack_Stab",
+          "Hit_A",
+          "Hit_B",
+          "Idle",
+          "Interact",
+          "Jump_Full_Long",
+          "Jump_Full_Short",
+          "Jump_Idle",
+          "Jump_Land",
+          "Jump_Start",
+          "Lie_Down",
+          "Lie_Idle",
+          "Lie_Pose",
+          "Lie_StandUp",
+          "PickUp",
+          "Running_A",
+          "Running_B",
+          "Running_Strafe_Left",
+          "Running_Strafe_Right",
+          "Sit_Chair_Down",
+          "Sit_Chair_Idle",
+          "Sit_Chair_Pose",
+          "Sit_Chair_StandUp",
+          "Sit_Floor_Down",
+          "Sit_Floor_Idle",
+          "Sit_Floor_Pose",
+          "Sit_Floor_StandUp",
+          "Spellcast_Long",
+          "Spellcast_Raise",
+          "Spellcast_Shoot",
+          "Spellcasting",
+          "T-Pose",
+          "Throw",
+          "Unarmed_Idle",
+          "Unarmed_Melee_Attack_Kick",
+          "Unarmed_Melee_Attack_Punch_A",
+          "Unarmed_Melee_Attack_Punch_B",
+          "Unarmed_Pose",
+          "Use_Item",
+          "Walking_A",
+          "Walking_B",
+          "Walking_Backwards",
+          "Walking_C"
+        ],
+        "meshes": [
+          "Cube.199",
+          "Cylinder.002",
+          "Cube.015",
+          "Cube.004",
+          "Cylinder.008",
+          "Cylinder.006",
+          "Plane.007",
+          "Cube.202",
+          "PrototypePete_body.025",
+          "Cube.210",
+          "Cube.194",
+          "Cube.187"
+        ],
+        "nodes": [
+          "Knife_Offhand",
+          "handslot.l",
+          "hand.l",
+          "wrist.l",
+          "lowerarm.l",
+          "upperarm.l",
+          "1H_Crossbow",
+          "2H_Crossbow",
+          "Knife",
+          "Throwable",
+          "handslot.r",
+          "hand.r",
+          "wrist.r",
+          "lowerarm.r",
+          "upperarm.r",
+          "head",
+          "Rogue_Cape",
+          "chest",
+          "spine",
+          "toes.l",
+          "foot.l",
+          "lowerleg.l",
+          "upperleg.l",
+          "toes.r",
+          "foot.r",
+          "lowerleg.r",
+          "upperleg.r",
+          "hips",
+          "kneeIK.l",
+          "heelIK.l",
+          "IK-foot.l",
+          "control-foot-roll.l",
+          "IK-toe.l",
+          "control-heel-roll.l",
+          "control-toe-roll.l",
+          "kneeIK.r",
+          "heelIK.r",
+          "IK-foot.r",
+          "control-foot-roll.r",
+          "IK-toe.r",
+          "control-heel-roll.r",
+          "control-toe-roll.r",
+          "elbowIK.l",
+          "handIK.l",
+          "elbowIK.r",
+          "handIK.r",
+          "root",
+          "Rogue_ArmLeft",
+          "Rogue_ArmRight",
+          "Rogue_Body",
+          "Rogue_Head",
+          "Rogue_LegLeft",
+          "Rogue_LegRight",
+          "Rig"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "char_npc_rogue_hooded",
+      "name": "Village Scout & Ranger (Maya)",
+      "category": "characters",
+      "path": "/assets/characters/npcs/rogue_hooded.glb",
+      "source": "Quaternius Animated RPG Characters",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 3597652,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "1H_Melee_Attack_Chop",
+          "1H_Melee_Attack_Slice_Diagonal",
+          "1H_Melee_Attack_Slice_Horizontal",
+          "1H_Melee_Attack_Stab",
+          "1H_Ranged_Aiming",
+          "1H_Ranged_Reload",
+          "1H_Ranged_Shoot",
+          "1H_Ranged_Shooting",
+          "2H_Melee_Attack_Chop",
+          "2H_Melee_Attack_Slice",
+          "2H_Melee_Attack_Spin",
+          "2H_Melee_Attack_Spinning",
+          "2H_Melee_Attack_Stab",
+          "2H_Melee_Idle",
+          "2H_Ranged_Aiming",
+          "2H_Ranged_Reload",
+          "2H_Ranged_Shoot",
+          "2H_Ranged_Shooting",
+          "Block",
+          "Block_Attack",
+          "Block_Hit",
+          "Blocking",
+          "Cheer",
+          "Death_A",
+          "Death_A_Pose",
+          "Death_B",
+          "Death_B_Pose",
+          "Dodge_Backward",
+          "Dodge_Forward",
+          "Dodge_Left",
+          "Dodge_Right",
+          "Dualwield_Melee_Attack_Chop",
+          "Dualwield_Melee_Attack_Slice",
+          "Dualwield_Melee_Attack_Stab",
+          "Hit_A",
+          "Hit_B",
+          "Idle",
+          "Interact",
+          "Jump_Full_Long",
+          "Jump_Full_Short",
+          "Jump_Idle",
+          "Jump_Land",
+          "Jump_Start",
+          "Lie_Down",
+          "Lie_Idle",
+          "Lie_Pose",
+          "Lie_StandUp",
+          "PickUp",
+          "Running_A",
+          "Running_B",
+          "Running_Strafe_Left",
+          "Running_Strafe_Right",
+          "Sit_Chair_Down",
+          "Sit_Chair_Idle",
+          "Sit_Chair_Pose",
+          "Sit_Chair_StandUp",
+          "Sit_Floor_Down",
+          "Sit_Floor_Idle",
+          "Sit_Floor_Pose",
+          "Sit_Floor_StandUp",
+          "Spellcast_Long",
+          "Spellcast_Raise",
+          "Spellcast_Shoot",
+          "Spellcasting",
+          "T-Pose",
+          "Throw",
+          "Unarmed_Idle",
+          "Unarmed_Melee_Attack_Kick",
+          "Unarmed_Melee_Attack_Punch_A",
+          "Unarmed_Melee_Attack_Punch_B",
+          "Unarmed_Pose",
+          "Use_Item",
+          "Walking_A",
+          "Walking_B",
+          "Walking_Backwards",
+          "Walking_C"
+        ],
+        "meshes": [
+          "Cube.199",
+          "Cylinder.002",
+          "Cube.015",
+          "Cube.004",
+          "Cylinder.008",
+          "Cylinder.006",
+          "Plane.007",
+          "Cube.202",
+          "PrototypePete_body.025",
+          "Cube.12634",
+          "Cube.194",
+          "Cube.187"
+        ],
+        "nodes": [
+          "Knife_Offhand",
+          "handslot.l",
+          "hand.l",
+          "wrist.l",
+          "lowerarm.l",
+          "upperarm.l",
+          "1H_Crossbow",
+          "2H_Crossbow",
+          "Knife",
+          "Throwable",
+          "handslot.r",
+          "hand.r",
+          "wrist.r",
+          "lowerarm.r",
+          "upperarm.r",
+          "head",
+          "Rogue_Cape",
+          "chest",
+          "spine",
+          "toes.l",
+          "foot.l",
+          "lowerleg.l",
+          "upperleg.l",
+          "toes.r",
+          "foot.r",
+          "lowerleg.r",
+          "upperleg.r",
+          "hips",
+          "kneeIK.l",
+          "heelIK.l",
+          "IK-foot.l",
+          "control-foot-roll.l",
+          "IK-toe.l",
+          "control-heel-roll.l",
+          "control-toe-roll.l",
+          "kneeIK.r",
+          "heelIK.r",
+          "IK-foot.r",
+          "control-foot-roll.r",
+          "IK-toe.r",
+          "control-heel-roll.r",
+          "control-toe-roll.r",
+          "elbowIK.l",
+          "handIK.l",
+          "elbowIK.r",
+          "handIK.r",
+          "root",
+          "Rogue_ArmLeft",
+          "Rogue_ArmRight",
+          "Rogue_Body",
+          "Rogue_Head_Hooded",
+          "Rogue_LegLeft",
+          "Rogue_LegRight",
+          "Rig"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "char_npc_cleric",
+      "name": "Valley Priestess (Ibu Siti)",
+      "category": "characters",
+      "path": "/assets/characters/npcs/cleric.gltf",
+      "source": "Quaternius Animated RPG Characters",
+      "license": "CC0 1.0 Universal",
+      "format": "gltf",
+      "size": 2985183,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "Death",
+          "Idle",
+          "Idle_Weapon",
+          "PickUp",
+          "Punch",
+          "RecieveHit",
+          "RecieveHit_Attacking",
+          "Run",
+          "Spell1",
+          "Staff_Attack",
+          "Walk"
+        ],
+        "meshes": [
+          "_ncl1_29.004",
+          "_ncl1_29.003",
+          "Torus.010",
+          "_ncl1_29.005"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "char_npc_monk",
+      "name": "Valley Elder Monk (Kakek Danu)",
+      "category": "characters",
+      "path": "/assets/characters/npcs/monk.gltf",
+      "source": "Quaternius Animated RPG Characters",
+      "license": "CC0 1.0 Universal",
+      "format": "gltf",
+      "size": 2655048,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "Attack",
+          "Attack2",
+          "Death",
+          "Idle",
+          "Idle_Attacking",
+          "PickUp",
+          "RecieveHit",
+          "RecieveHit_2",
+          "Roll",
+          "Run",
+          "Walk"
+        ],
+        "meshes": [
+          "_ncl1_29.004",
+          "_ncl1_29.005"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "enemy_skeleton_warrior",
+      "name": "Skeleton Warrior (Undead Minion)",
+      "category": "enemies",
+      "path": "/assets/characters/enemies/skeleton_warrior.glb",
+      "source": "Kenney Graveyard Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 202796,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "static",
+          "idle",
+          "walk",
+          "sprint",
+          "jump",
+          "fall",
+          "crouch",
+          "sit",
+          "drive",
+          "die",
+          "pick-up",
+          "emote-yes",
+          "emote-no",
+          "holding-right",
+          "holding-left",
+          "holding-both",
+          "holding-right-shoot",
+          "holding-left-shoot",
+          "holding-both-shoot",
+          "attack-melee-right",
+          "attack-melee-left",
+          "attack-kick-right",
+          "attack-kick-left",
+          "interact-right",
+          "interact-left",
+          "wheelchair-sit",
+          "wheelchair-look-left",
+          "wheelchair-look-right",
+          "wheelchair-move-forward",
+          "wheelchair-move-back",
+          "wheelchair-move-left",
+          "wheelchair-move-right"
+        ],
+        "meshes": [
+          "leg-left",
+          "torso",
+          "head",
+          "arm-right",
+          "arm-left",
+          "leg-right"
+        ],
+        "nodes": [
+          "character-skeleton",
+          "root",
+          "leg-left",
+          "torso",
+          "head",
+          "arm-right",
+          "arm-left",
+          "leg-right"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "enemy_zombie_marauder",
+      "name": "Zombie Marauder (Infected Brute)",
+      "category": "enemies",
+      "path": "/assets/characters/enemies/zombie_marauder.glb",
+      "source": "Kenney Graveyard Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 245500,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "static",
+          "idle",
+          "walk",
+          "sprint",
+          "jump",
+          "fall",
+          "crouch",
+          "sit",
+          "drive",
+          "die",
+          "pick-up",
+          "emote-yes",
+          "emote-no",
+          "holding-right",
+          "holding-left",
+          "holding-both",
+          "holding-right-shoot",
+          "holding-left-shoot",
+          "holding-both-shoot",
+          "attack-melee-right",
+          "attack-melee-left",
+          "attack-kick-right",
+          "attack-kick-left",
+          "interact-right",
+          "interact-left",
+          "wheelchair-sit",
+          "wheelchair-look-left",
+          "wheelchair-look-right",
+          "wheelchair-move-forward",
+          "wheelchair-move-back",
+          "wheelchair-move-left",
+          "wheelchair-move-right"
+        ],
+        "meshes": [
+          "leg-left",
+          "leg-right",
+          "torso",
+          "arm-left",
+          "arm-right",
+          "head"
+        ],
+        "nodes": [
+          "character-zombie",
+          "root",
+          "leg-left",
+          "leg-right",
+          "torso",
+          "arm-left",
+          "arm-right",
+          "head"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "enemy_blue_demon",
+      "name": "Frost Demon (Boss Monster)",
+      "category": "enemies",
+      "path": "/assets/characters/enemies/blue_demon.gltf",
+      "source": "Quaternius Ultimate Monsters",
+      "license": "CC0 1.0 Universal",
+      "format": "gltf",
+      "size": 1190068,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "Death",
+          "Duck",
+          "HitReact",
+          "Idle",
+          "Jump",
+          "Jump_Idle",
+          "Jump_Land",
+          "No",
+          "Punch",
+          "Run",
+          "Walk",
+          "Wave",
+          "Weapon",
+          "Yes"
+        ],
+        "meshes": [
+          "Cube.017"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "enemy_flame_demon",
+      "name": "Flame Demon (Infernal Beast)",
+      "category": "enemies",
+      "path": "/assets/characters/enemies/flame_demon.gltf",
+      "source": "Quaternius Ultimate Monsters",
+      "license": "CC0 1.0 Universal",
+      "format": "gltf",
+      "size": 1264925,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "Death",
+          "Duck",
+          "HitReact",
+          "Idle",
+          "Jump",
+          "Jump_Idle",
+          "Jump_Land",
+          "No",
+          "Punch",
+          "Run",
+          "Walk",
+          "Wave",
+          "Weapon",
+          "Yes"
+        ],
+        "meshes": [
+          "Cube.098",
+          "Cylinder.005"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "enemy_orc_berserker",
+      "name": "Orc Berserker (Outland Raider)",
+      "category": "enemies",
+      "path": "/assets/characters/enemies/orc_berserker.gltf",
+      "source": "Quaternius Ultimate Monsters",
+      "license": "CC0 1.0 Universal",
+      "format": "gltf",
+      "size": 1280189,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "Death",
+          "Duck",
+          "HitReact",
+          "Idle",
+          "Jump",
+          "Jump_Idle",
+          "Jump_Land",
+          "No",
+          "Punch",
+          "Run",
+          "Walk",
+          "Wave",
+          "Weapon",
+          "Yes"
+        ],
+        "meshes": [
+          "Cube.026",
+          "Cylinder.008"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "enemy_warrior_marauder",
+      "name": "Warrior Marauder (Human Bandit)",
+      "category": "enemies",
+      "path": "/assets/characters/enemies/warrior_marauder.gltf",
+      "source": "Quaternius Animated RPG Characters",
+      "license": "CC0 1.0 Universal",
+      "format": "gltf",
+      "size": 3035392,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "Death",
+          "Idle",
+          "Idle_Attacking",
+          "Idle_Weapon",
+          "PickUp",
+          "Punch",
+          "RecieveHit",
+          "Roll",
+          "Run",
+          "Run_Weapon",
+          "Sword_Attack",
+          "Sword_Attack2",
+          "Walk"
+        ],
+        "meshes": [
+          "_ncl1_29.005",
+          "_ncl1_29.002",
+          "_ncl1_29.000",
+          "Cylinder.001",
+          "_ncl1_29.001"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "bld_stall_food",
+      "name": "Village Bakery & Produce Stand (Ibu Mina)",
+      "category": "shops",
+      "path": "/assets/buildings/shops/stall_food.glb",
+      "source": "Kenney Fantasy Town Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 27120,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "stall-green"
+        ],
+        "nodes": [
+          "stall-green"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "bld_stall_weapon",
+      "name": "Weapon Smith Display Stall (Mang Asep)",
+      "category": "shops",
+      "path": "/assets/buildings/shops/stall_weapon.glb",
+      "source": "Kenney Fantasy Town Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 24304,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "stall-red"
+        ],
+        "nodes": [
+          "stall-red"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "bld_stall_bench",
+      "name": "Merchant Counter Bench",
+      "category": "shops",
+      "path": "/assets/buildings/shops/stall_bench.glb",
+      "source": "Kenney Fantasy Town Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 14168,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "stall-bench"
+        ],
+        "nodes": [
+          "stall-bench"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "bld_village_fountain",
+      "name": "Village Plaza Central Stone Fountain",
+      "category": "village",
+      "path": "/assets/buildings/village/village_fountain.glb",
+      "source": "Kenney Fantasy Town Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 84848,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "fountain-round",
+          "(%ignore)"
+        ],
+        "nodes": [
+          "fountain-round",
+          "(%ignore)"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "bld_wooden_cart",
+      "name": "Rustic Freight Handcart",
+      "category": "village",
+      "path": "/assets/buildings/village/wooden_cart.glb",
+      "source": "Kenney Fantasy Town Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 52920,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "cart",
+          "Group",
+          "Group"
+        ],
+        "nodes": [
+          "cart",
+          "Group",
+          "Group"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "bld_iron_lantern",
+      "name": "Wrought Iron Village Lamp Post",
+      "category": "village",
+      "path": "/assets/buildings/village/iron_lantern.glb",
+      "source": "Kenney Fantasy Town Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 14984,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "lantern"
+        ],
+        "nodes": [
+          "lantern"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "bld_timber_fence",
+      "name": "Village Border Wooden Fence",
+      "category": "village",
+      "path": "/assets/buildings/village/timber_fence.glb",
+      "source": "Kenney Fantasy Town Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 7672,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "fence"
+        ],
+        "nodes": [
+          "fence"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "furn_wood_table",
+      "name": "Carved Oak Tavern Dining Table",
+      "category": "interior",
+      "path": "/assets/buildings/interior/wood_table.glb",
+      "source": "Kenney Furniture Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 8196,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "Mesh table"
+        ],
+        "nodes": [
+          "table(Clone)"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "furn_wood_chair",
+      "name": "Rustic Cottage Chair",
+      "category": "interior",
+      "path": "/assets/buildings/interior/wood_chair.glb",
+      "source": "Kenney Furniture Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 10756,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "Mesh chair"
+        ],
+        "nodes": [
+          "chair(Clone)"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "furn_bookcase",
+      "name": "Scholar Library Bookcase",
+      "category": "interior",
+      "path": "/assets/buildings/interior/bookcase.glb",
+      "source": "Kenney Furniture Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 18020,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "Mesh bookcaseOpen"
+        ],
+        "nodes": [
+          "bookcaseOpen(Clone)"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "wpn_knight_sword",
+      "name": "Pedang Kesatria Lembah (Knight Sword)",
+      "category": "weapons",
+      "path": "/assets/items/weapons/knight_sword.glb",
+      "source": "Quaternius RPG Weapons",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 28420,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "Cylinder"
+        ],
+        "nodes": [
+          "Sword"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "wpn_magic_sword",
+      "name": "Bilah Sihir Rune (Rune Magic Blade)",
+      "category": "weapons",
+      "path": "/assets/items/weapons/magic_sword.glb",
+      "source": "Quaternius RPG Weapons",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 1711208,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "tape_p_3_low"
+        ],
+        "nodes": [
+          "Light",
+          "Camera",
+          "tape_p_3_low"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "wpn_arming_sword",
+      "name": "Pedang Tempa Besi Baja (Arming Sword)",
+      "category": "weapons",
+      "path": "/assets/items/weapons/arming_sword.glb",
+      "source": "HeyHeyThere / Godot PSX Medieval Weapons Free",
+      "license": "CC-BY 4.0",
+      "format": "glb",
+      "size": 16876,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "swing"
+        ],
+        "meshes": [
+          "arming_sword"
+        ],
+        "nodes": [
+          "arming_sword"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "wpn_hand_axe",
+      "name": "Kapak Tempur Pembelah (Hand Battle Axe)",
+      "category": "weapons",
+      "path": "/assets/items/weapons/hand_axe.glb",
+      "source": "HeyHeyThere / Godot PSX Medieval Weapons Free",
+      "license": "CC-BY 4.0",
+      "format": "glb",
+      "size": 8692,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "swing"
+        ],
+        "meshes": [
+          "hand_axe"
+        ],
+        "nodes": [
+          "hand_axe"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "wpn_fire_torch",
+      "name": "Obor Api Petualang (Fire Torch)",
+      "category": "weapons",
+      "path": "/assets/items/weapons/fire_torch.glb",
+      "source": "HeyHeyThere / Godot PSX Medieval Weapons Free",
+      "license": "CC-BY 4.0",
+      "format": "glb",
+      "size": 13844,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "swing",
+          "burn",
+          "flare"
+        ],
+        "meshes": [
+          "torch_flame0",
+          "torch_flame1",
+          "torch_flame2",
+          "torch"
+        ],
+        "nodes": [
+          "torch_flame0",
+          "torch_flame1",
+          "torch_flame2",
+          "torch"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "arm_round_shield",
+      "name": "Perisai Kayu Berpaku Besi (Round Shield)",
+      "category": "armor",
+      "path": "/assets/items/armor/round_shield.glb",
+      "source": "HeyHeyThere / Godot PSX Medieval Weapons Free",
+      "license": "CC-BY 4.0",
+      "format": "glb",
+      "size": 20596,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "block",
+          "bash"
+        ],
+        "meshes": [
+          "round_shield"
+        ],
+        "nodes": [
+          "round_shield"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "food_fresh_bread",
+      "name": "Roti Gandum Hangat (Fresh Bread)",
+      "category": "food",
+      "path": "/assets/items/food/bread.glb",
+      "source": "Kenney Food Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 9468,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "bread"
+        ],
+        "nodes": [
+          "bread"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "food_orchard_apple",
+      "name": "Apel Kebun Manis (Sweet Orchard Apple)",
+      "category": "food",
+      "path": "/assets/items/food/apple.glb",
+      "source": "Kenney Food Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 14376,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "apple"
+        ],
+        "nodes": [
+          "apple"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "food_roasted_meat",
+      "name": "Daging Panggang Rimba (Roasted Meat)",
+      "category": "food",
+      "path": "/assets/items/food/roasted-meat.glb",
+      "source": "Kenney Food Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 5696,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "bacon"
+        ],
+        "nodes": [
+          "bacon"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "food_hot_stew",
+      "name": "Sup Jamur Lembah Hangat (Valley Stew)",
+      "category": "food",
+      "path": "/assets/items/food/bowl-soup.glb",
+      "source": "Kenney Food Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 11188,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "bowl-soup"
+        ],
+        "nodes": [
+          "bowl-soup"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "food_herbal_tea",
+      "name": "Minyak & Ramuan Herbal (Herbal Tonic)",
+      "category": "food",
+      "path": "/assets/items/food/herbal-tea.glb",
+      "source": "Kenney Food Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 10500,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "bottle-oil"
+        ],
+        "nodes": [
+          "bottle-oil"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "loot_treasure_chest",
+      "name": "Peti Harta Karun Kayu Besi (Treasure Chest)",
+      "category": "loot",
+      "path": "/assets/items/loot/treasure_chest.glb",
+      "source": "Kenney Survival Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 35172,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "open",
+          "close",
+          "open-close"
+        ],
+        "meshes": [
+          "chest",
+          "lid"
+        ],
+        "nodes": [
+          "chest",
+          "lid"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "loot_health_flask",
+      "name": "Botol Potion Pemulih Darah (Health Flask)",
+      "category": "loot",
+      "path": "/assets/items/loot/potion_health_flask.glb",
+      "source": "HeyHeyThere / Godot PSX Medieval Weapons Free",
+      "license": "CC-BY 4.0",
+      "format": "glb",
+      "size": 11816,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [
+          "uncork"
+        ],
+        "meshes": [
+          "potion_health_cork",
+          "potion_health"
+        ],
+        "nodes": [
+          "potion_health_cork",
+          "potion_health"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "prop_wilderness_campfire",
+      "name": "Api Unggun Rimba (Campfire Pit)",
+      "category": "props",
+      "path": "/assets/environment/props/wilderness_campfire.glb",
+      "source": "Kenney Survival Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 26468,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "campfire-pit",
+          "wood"
+        ],
+        "nodes": [
+          "campfire-pit",
+          "wood"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "prop_cemetery_tombstone",
+      "name": "Batu Nisan Kuno Berukir (Ancient Tombstone)",
+      "category": "props",
+      "path": "/assets/environment/props/cemetery_tombstone.glb",
+      "source": "Kenney Graveyard Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 20584,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "gravestone-cross"
+        ],
+        "nodes": [
+          "gravestone-cross"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "prop_ancient_crypt",
+      "name": "Bangunan Mausoleum Kubur Kuno (Ancient Crypt)",
+      "category": "props",
+      "path": "/assets/environment/props/ancient_crypt.glb",
+      "source": "Kenney Graveyard Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 25048,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "crypt"
+        ],
+        "nodes": [
+          "crypt"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "prop_wooden_bucket",
+      "name": "Ember Air Kayu Sumur (Wooden Bucket)",
+      "category": "props",
+      "path": "/assets/environment/props/wooden_bucket.glb",
+      "source": "Kenney Survival Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 7816,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "bucket"
+        ],
+        "nodes": [
+          "bucket"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "prop_cargo_crate",
+      "name": "Peti Muatan Kayu Ekspor (Cargo Crate)",
+      "category": "props",
+      "path": "/assets/environment/props/cargo_crate.glb",
+      "source": "Kenney Pirate Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 9232,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "crate"
+        ],
+        "nodes": [
+          "crate"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "loot_crafting_planks",
+      "name": "Papan Kayu Bahan Bangunan (Crafting Planks)",
+      "category": "loot",
+      "path": "/assets/items/loot/crafting_planks.glb",
+      "source": "Kenney Survival Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 8884,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "resource-planks"
+        ],
+        "nodes": [
+          "resource-planks"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "env_tree_pine_a",
+      "name": "Pohon Pinus Lembah A (Pine Tall A)",
+      "category": "vegetation",
+      "path": "/assets/environment/vegetation/tree_pineTallA.glb",
+      "source": "Kenney Nature Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 7200,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "Mesh tree_pineTallA"
+        ],
+        "nodes": [
+          "tmpParent",
+          "tree_pineTallA"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "env_tree_oak",
+      "name": "Pohon Ek Rimbun (Oak Tree)",
+      "category": "vegetation",
+      "path": "/assets/environment/vegetation/tree_oak.glb",
+      "source": "Kenney Nature Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 14644,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "Mesh tree_oak"
+        ],
+        "nodes": [
+          "tmpParent",
+          "tree_oak"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "env_rock_large_a",
+      "name": "Bongkahan Batu Granit Besar (Large Granite Rock)",
+      "category": "rocks",
+      "path": "/assets/environment/rocks/rock_largeA.glb",
+      "source": "Kenney Nature Kit",
+      "license": "CC0 1.0 Universal",
+      "format": "glb",
+      "size": 7552,
+      "validationStatus": "VALIDATED",
+      "meta": {
+        "valid": true,
+        "animations": [],
+        "meshes": [
+          "Mesh rock_largeA"
+        ],
+        "nodes": [
+          "tmpParent",
+          "rock_largeA"
+        ]
+      },
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "tex_cobblestone_path",
+      "name": "Tekstur Jalan Batu Desa 1K (Cobblestone 05)",
+      "category": "textures",
+      "path": "/assets/textures/ground/cobblestone_diffuse.jpg",
+      "source": "Poly Haven",
+      "license": "CC0 1.0 Universal",
+      "format": "jpg",
+      "size": 481633,
+      "validationStatus": "VALIDATED",
+      "meta": {},
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "tex_dirt_trail",
+      "name": "Tekstur Jalur Tanah Hutan 1K (Brown Mud Rocks 01)",
+      "category": "textures",
+      "path": "/assets/textures/ground/dirt_path_diffuse.jpg",
+      "source": "Poly Haven",
+      "license": "CC0 1.0 Universal",
+      "format": "jpg",
+      "size": 887215,
+      "validationStatus": "VALIDATED",
+      "meta": {},
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "tex_grass_field",
+      "name": "Tekstur Padang Rumput Lembah (Grass Diffuse)",
+      "category": "textures",
+      "path": "/assets/textures/ground/grass_diffuse.jpg",
+      "source": "Poly Haven / Wildlands Standard",
+      "license": "CC0 1.0 Universal",
+      "format": "jpg",
+      "size": 2595150,
+      "validationStatus": "VALIDATED",
+      "meta": {},
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "sfx_sword_swing",
+      "name": "Suara Tebasan Pedang (Sword Swing Whoosh)",
+      "category": "audio",
+      "path": "/assets/audio/rpg/sword_swing.ogg",
+      "source": "Kenney RPG Audio",
+      "license": "CC0 1.0 Universal",
+      "format": "ogg",
+      "size": 9370,
+      "validationStatus": "VALIDATED",
+      "meta": {},
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "sfx_metal_hit",
+      "name": "Dentang Benturan Logam Pedang (Metal Hit Clang)",
+      "category": "audio",
+      "path": "/assets/audio/impacts/metal_sword_hit.ogg",
+      "source": "Kenney Impact Sounds",
+      "license": "CC0 1.0 Universal",
+      "format": "ogg",
+      "size": 6110,
+      "validationStatus": "VALIDATED",
+      "meta": {},
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "sfx_shield_block",
+      "name": "Benturan Perisai Kayu (Wood Shield Block)",
+      "category": "audio",
+      "path": "/assets/audio/impacts/wood_shield_block.ogg",
+      "source": "Kenney Impact Sounds",
+      "license": "CC0 1.0 Universal",
+      "format": "ogg",
+      "size": 6575,
+      "validationStatus": "VALIDATED",
+      "meta": {},
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "sfx_shop_purchase",
+      "name": "Efek Transaksi Toko (Shop Purchase Chime)",
+      "category": "audio",
+      "path": "/assets/audio/ui/shop_purchase.ogg",
+      "source": "Kenney Interface Sounds",
+      "license": "CC0 1.0 Universal",
+      "format": "ogg",
+      "size": 8968,
+      "validationStatus": "VALIDATED",
+      "meta": {},
+      "integrationStatus": "INTEGRATED"
+    },
+    {
+      "id": "sfx_insufficient_gold",
+      "name": "Efek Emas Tidak Cukup (Error Buzz)",
+      "category": "audio",
+      "path": "/assets/audio/ui/insufficient_gold.ogg",
+      "source": "Kenney Interface Sounds",
+      "license": "CC0 1.0 Universal",
+      "format": "ogg",
+      "size": 7373,
+      "validationStatus": "VALIDATED",
+      "meta": {},
+      "integrationStatus": "INTEGRATED"
+    }
+  ]
+}

@@ -78,6 +78,53 @@ export class EnemyManager {
     };
 
     this.enemies.push(warrior);
+
+    // 2. Skeleton Guardian at Ancient Stone Ruins (-40, 38)
+    const skeleton = new EnemyController(this.scene, this.terrain, this.buildings, {
+      id: 'skeleton_ruins_01',
+      name: 'Skeleton Guardian',
+      modelUrl: '/assets/characters/enemies/skeleton_warrior.glb',
+      level: 2,
+      maxHp: 80,
+      attackDamage: 14,
+      detectionRadius: 12.0,
+      loseTargetRadius: 24.0,
+      attackRange: 2.0,
+      attackCooldown: 1.8,
+      walkSpeed: 1.8,
+      runSpeed: 4.5,
+      spawnX: -40,
+      spawnZ: 38
+    });
+
+    skeleton.onDealDamageToPlayer = (dmg, enemy) => {
+      if (this.currentPlayer) {
+        this.combat.damagePlayer(dmg, enemy, this.currentPlayer);
+      }
+    };
+
+    skeleton.onAlert = () => {
+      this.combat.audio.playAlert();
+      if (window.__showWildlandsToast) {
+        window.__showWildlandsToast('💀 Skeleton Guardian bangkit dari reruntuhan batu!', 'warning');
+      }
+    };
+
+    skeleton.onDeath = (enemy) => {
+      this.combat.audio.playEnemyDefeat();
+      if (this.lootManager) {
+        this.lootManager.spawnLootFromTable('warrior_marauder', enemy.position);
+      }
+      if (this.lobbyData) {
+        this.lobbyData.addGold(20);
+        this.lobbyData.addXP(35);
+      }
+      if (window.__showWildlandsToast) {
+        window.__showWildlandsToast('💀 Skeleton Guardian dihancurkan! (+35 EXP, +20 Emas)', 'success');
+      }
+    };
+
+    this.enemies.push(skeleton);
   }
 
   // Called on dodge roll input [Q]

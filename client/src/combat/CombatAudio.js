@@ -6,6 +6,25 @@ export class CombatAudio {
   constructor() {
     this.ctx = null;
     this.isMuted = false;
+    this.soundCache = {};
+  }
+
+  playAudioClip(url, fallbackFn) {
+    if (this.isMuted) return;
+    if (typeof window !== 'undefined' && window.Audio) {
+      try {
+        if (!this.soundCache[url]) {
+          this.soundCache[url] = new Audio(url);
+        }
+        const a = this.soundCache[url].cloneNode();
+        a.volume = 0.5;
+        a.play().catch(() => {
+          if (fallbackFn) fallbackFn();
+        });
+        return;
+      } catch (_) {}
+    }
+    if (fallbackFn) fallbackFn();
   }
 
   ensureContext() {
@@ -24,6 +43,12 @@ export class CombatAudio {
 
   // Sword Swing / Slash Whoosh
   playSwordSwing() {
+    this.playAudioClip('/assets/audio/rpg/sword_swing.ogg', () => {
+      this.synthesizeSwordSwing();
+    });
+  }
+
+  synthesizeSwordSwing() {
     if (this.isMuted) return;
     const ctx = this.ensureContext();
     if (!ctx) return;
@@ -93,6 +118,12 @@ export class CombatAudio {
 
   // Shop Coin Purchase Sound
   playCoinBuy() {
+    this.playAudioClip('/assets/audio/ui/shop_purchase.ogg', () => {
+      this.synthesizeCoinBuy();
+    });
+  }
+
+  synthesizeCoinBuy() {
     if (this.isMuted) return;
     const ctx = this.ensureContext();
     if (!ctx) return;
@@ -116,6 +147,12 @@ export class CombatAudio {
 
   // Melee Hit Impact (Sword striking enemy flesh/armor)
   playHitImpact() {
+    this.playAudioClip('/assets/audio/impacts/metal_sword_hit.ogg', () => {
+      this.synthesizeHitImpact();
+    });
+  }
+
+  synthesizeHitImpact() {
     if (this.isMuted) return;
     const ctx = this.ensureContext();
     if (!ctx) return;

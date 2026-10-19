@@ -21,6 +21,7 @@ import { SaveSystem } from '../rpg/SaveSystem.js';
 import { OnboardingManager } from '../rpg/OnboardingManager.js';
 import { ShopUI } from '../rpg/ShopUI.js';
 import { Minimap } from '../ui/Minimap.js';
+import { AssetPreviewUI } from '../ui/AssetPreviewUI.js';
 import { RPG_ITEMS } from '../rpg/RPGConfig.js';
 
 export class Game {
@@ -230,6 +231,7 @@ export class Game {
 
     this.dialogueManager = new DialogueManager(this.npcManager, this.questManager, this.input, this.shopUI);
     this.inventoryUI = new InventoryUI(this.inventory, this.enemyManager.combat, this.input);
+    this.assetPreviewUI = new AssetPreviewUI();
 
     // Sync weapon equipping from inventory bag to player 3D mesh
     const origEquipItem = this.inventory.equipItem.bind(this.inventory);

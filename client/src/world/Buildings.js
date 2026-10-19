@@ -1,10 +1,13 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class Buildings {
   constructor(scene, terrain) {
     this.scene = scene;
     this.terrain = terrain;
     this.colliders = []; // Array of { x, z, radius, height } for collision detection
+
+    this.loader = typeof window !== 'undefined' ? new GLTFLoader() : null;
 
     this.group = new THREE.Group();
     this.group.name = 'BuildingsGroup';
@@ -50,6 +53,36 @@ export class Buildings {
       wallColor: 0x6e5235,
       roofColor: 0x8a392b
     });
+
+    // 4. Load 3D CC0 Props into the living world
+    this.loadProp('/assets/environment/props/cemetery_tombstone.glb', -42, 36, 1.2, 0.4);
+    this.loadProp('/assets/environment/props/cemetery_tombstone.glb', -38, 41, 1.1, -0.6);
+    this.loadProp('/assets/environment/props/ancient_crypt.glb', -44, 42, 1.3, 0.2);
+    this.loadProp('/assets/buildings/village/wooden_cart.glb', 10, 5, 1.0, 0.3);
+    this.loadProp('/assets/buildings/village/wooden_wagon.glb', 30, -10, 1.0, -0.5);
+    this.loadProp('/assets/buildings/village/iron_lantern.glb', 12, 1, 1.0, 0);
+    this.loadProp('/assets/buildings/village/iron_lantern.glb', 7, 13, 1.0, 0);
+    this.loadProp('/assets/environment/props/wooden_bucket.glb', 5.5, 21.8, 1.0, 0);
+    this.loadProp('/assets/items/loot/treasure_chest.glb', 24, 16, 1.0, 0.2);
+    this.loadProp('/assets/environment/props/cargo_crate.glb', 15.5, 2.5, 1.0, 0.1);
+  }
+
+  loadProp(url, x, z, scale = 1, rotY = 0) {
+    if (typeof window === 'undefined' || !this.loader) return;
+    const y = this.terrain.getSurfaceHeight ? this.terrain.getSurfaceHeight(x, z) : this.terrain.getHeightAt(x, z);
+    this.loader.load(url, (gltf) => {
+      const model = gltf.scene;
+      model.position.set(x, y, z);
+      model.scale.set(scale, scale, scale);
+      model.rotation.y = rotY;
+      model.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+      this.group.add(model);
+    }, undefined, () => {});
   }
 
   createWatchtower(x, z) {

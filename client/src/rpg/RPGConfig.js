@@ -16,7 +16,8 @@ export const RPG_ITEMS = {
     value: 20,
     stackable: true,
     maxStack: 10,
-    effect: { type: 'heal_hp', amount: 40 }
+    effect: { type: 'heal_hp', amount: 40 },
+    modelUrl: '/assets/items/loot/potion_health_flask.glb'
   },
   potion_sta: {
     id: 'potion_sta',
@@ -42,7 +43,8 @@ export const RPG_ITEMS = {
     value: 15,
     stackable: true,
     maxStack: 20,
-    effect: { type: 'heal_hp', amount: 25 }
+    effect: { type: 'heal_hp', amount: 25 },
+    modelUrl: '/assets/items/food/bread.glb'
   },
   food_roasted_meat: {
     id: 'food_roasted_meat',
@@ -55,7 +57,8 @@ export const RPG_ITEMS = {
     value: 40,
     stackable: true,
     maxStack: 15,
-    effect: { type: 'heal_hp', amount: 55 }
+    effect: { type: 'heal_hp', amount: 55 },
+    modelUrl: '/assets/items/food/roasted-meat.glb'
   },
   food_forest_stew: {
     id: 'food_forest_stew',
@@ -68,7 +71,8 @@ export const RPG_ITEMS = {
     value: 55,
     stackable: true,
     maxStack: 10,
-    effect: { type: 'heal_hybrid', hp: 45, sta: 35 }
+    effect: { type: 'heal_hybrid', hp: 45, sta: 35 },
+    modelUrl: '/assets/items/food/bowl-soup.glb'
   },
   food_sweet_apple: {
     id: 'food_sweet_apple',
@@ -81,7 +85,8 @@ export const RPG_ITEMS = {
     value: 10,
     stackable: true,
     maxStack: 30,
-    effect: { type: 'restore_sta', amount: 25 }
+    effect: { type: 'restore_sta', amount: 25 },
+    modelUrl: '/assets/items/food/apple.glb'
   },
   food_herbal_tea: {
     id: 'food_herbal_tea',
@@ -94,7 +99,8 @@ export const RPG_ITEMS = {
     value: 25,
     stackable: true,
     maxStack: 15,
-    effect: { type: 'restore_sta', amount: 60 }
+    effect: { type: 'restore_sta', amount: 60 },
+    modelUrl: '/assets/items/food/herbal-tea.glb'
   },
 
   // --- WEAPONS ---
@@ -241,6 +247,60 @@ export const RPG_ITEMS = {
     value: 520,
     stackable: false,
     stats: { defense: 22, blockRate: 0.28, maxHp: 40 }
+  },
+  shd_round_shield: {
+    id: 'shd_round_shield',
+    name: 'Perisai Bulat Besi Ksatria',
+    type: 'shield',
+    equipSlot: 'shield',
+    category: 'Perisai Tempur',
+    rarity: 'rare',
+    icon: '🛡️✨',
+    description: 'Perisai bundar kokoh berpaku besi tempa dengan kemampuan menangkis serangan kuat.',
+    value: 290,
+    stackable: false,
+    stats: { defense: 18, blockRate: 0.25, maxHp: 20 },
+    modelUrl: '/assets/items/armor/round_shield.glb'
+  },
+  wpn_arming_sword: {
+    id: 'wpn_arming_sword',
+    name: 'Pedang Tempa Besi Baja',
+    type: 'weapon',
+    category: 'Pedang 1-Tangan',
+    rarity: 'rare',
+    icon: '⚔️🛡️',
+    description: 'Bilah baja padat dengan pegangan kulit, sangat seimbang untuk serangan tebasan dan tusukan.',
+    value: 380,
+    levelReq: 2,
+    stackable: false,
+    stats: { attack: 42, critChance: 0.15 },
+    modelUrl: '/assets/items/weapons/arming_sword.glb'
+  },
+  wpn_hand_axe: {
+    id: 'wpn_hand_axe',
+    name: 'Kapak Tempur Pembelah',
+    type: 'weapon',
+    category: 'Kapak 1-Tangan',
+    rarity: 'uncommon',
+    icon: '🪓',
+    description: 'Kapak tangan tajam dengan kepala baja yang sanggup merobek zirah lawan.',
+    value: 210,
+    stackable: false,
+    stats: { attack: 33, critChance: 0.10 },
+    modelUrl: '/assets/items/weapons/hand_axe.glb'
+  },
+  wpn_fire_torch: {
+    id: 'wpn_fire_torch',
+    name: 'Obor Api Penjelajah',
+    type: 'weapon',
+    category: 'Senjata Api & Penerang',
+    rarity: 'common',
+    icon: '🔥',
+    description: 'Obor kayu berapi yang menerangi gua gelap dan memberi luka bakar ringan.',
+    value: 50,
+    stackable: false,
+    stats: { attack: 18, critChance: 0.05 },
+    modelUrl: '/assets/items/weapons/fire_torch.glb'
   },
 
   // --- ARMOR ---
@@ -451,6 +511,9 @@ export const RPG_SHOPS = {
       'wpn_iron_sword',
       'wpn_shadow_dagger',
       'wpn_knight_blade',
+      'wpn_arming_sword',
+      'wpn_hand_axe',
+      'wpn_fire_torch',
       'wpn_battle_axe',
       'wpn_greatsword',
       'wpn_magic_blade'
@@ -472,6 +535,7 @@ export const RPG_SHOPS = {
       'arm_plate_greaves',
       'arm_knight_boots',
       'shd_wood_buckler',
+      'shd_round_shield',
       'shd_valley_shield',
       'shd_tower_shield'
     ]
