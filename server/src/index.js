@@ -129,6 +129,16 @@ app.get('/api/player/load/:playerId', (req, res) => {
   res.json({ success: true, save });
 });
 
+// APK Download endpoint
+app.get('/download/apk', (req, res) => {
+  const apkPath = path.join(clientDistPath, 'wildlands.apk');
+  if (fs.existsSync(apkPath)) {
+    res.download(apkPath, 'Wildlands-RPG.apk');
+  } else {
+    res.status(404).send('APK sedang disiapkan, silakan coba beberapa saat lagi.');
+  }
+});
+
 // Fallback to client index.html for SPA routing
 app.get('*', (req, res) => {
   res.sendFile(path.join(clientDistPath, 'index.html'));
