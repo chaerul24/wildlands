@@ -5,15 +5,16 @@ async function runTest() {
 
   const browser = await puppeteer.launch({
     executablePath: '/usr/bin/chromium',
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu']
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
   });
 
   const page = await browser.newPage();
+  page.setDefaultNavigationTimeout(60000);
 
   // Step 1: Initial load in Portrait mode (390 x 844)
   console.log('\n[TEST 1] Loading app in Portrait mode (390x844)...');
   await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
-  await page.goto('http://localhost:3001', { waitUntil: 'domcontentloaded' });
+  await page.goto('http://127.0.0.1:3001', { waitUntil: 'domcontentloaded', timeout: 60000 });
   await new Promise(r => setTimeout(r, 1200));
 
   // Track window reloads to prove seamless transition WITHOUT reloading

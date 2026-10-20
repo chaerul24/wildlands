@@ -32,21 +32,49 @@ export class CharacterModel {
     this.group.add(this.proceduralRoot);
     this.nodes = {};
 
-    // 1. Build high-fidelity procedural human model as immediate primary/fallback
+    // 1. Build high-fidelity procedural human model as primary authentic explorer
     this.buildProceduralHuman();
+    this.proceduralRoot.visible = true;
 
     // 2. Create stylized 3D floating nameplate
     this.createNameplate();
 
-    // 3. Asynchronously load authentic Quaternius 3D RPG model
+    // 3. Karakter utama jangan ketimpa: Default to authentic main human explorer
     const savedUrl = typeof localStorage !== 'undefined' ? localStorage.getItem('wildlands_player_model') : null;
-    const initialUrl = customModelUrl || savedUrl || '/models/rpg/Warrior.gltf';
-    this.loadGLTFModel(initialUrl);
+    const initialUrl = customModelUrl || savedUrl;
+
+    if (initialUrl && initialUrl !== 'main' && initialUrl !== 'explorer' && typeof initialUrl === 'string' && initialUrl.startsWith('/models/')) {
+      this.loadGLTFModel(initialUrl);
+    } else {
+      this.currentModelUrl = 'main';
+    }
   }
 
   setModel(url) {
+    if (!url || url === 'main' || url === 'explorer') {
+      this.restoreMainCharacter();
+      return;
+    }
     if (this.currentModelUrl === url && this.isGLTFLoaded) return;
     this.loadGLTFModel(url);
+  }
+
+  restoreMainCharacter() {
+    this.currentModelUrl = 'main';
+    if (this.gltfModel) {
+      this.group.remove(this.gltfModel);
+      this.gltfModel = null;
+    }
+    this.mixer = null;
+    this.actions = {};
+    this.activeAction = null;
+    this.isGLTFLoaded = false;
+    this.proceduralRoot.visible = true;
+
+    // Re-mount weapon to procedural socket if weapon is equipped
+    if (this.currentAttachedWeaponUrl) {
+      this.attachWeapon(this.currentAttachedWeaponUrl);
+    }
   }
 
   loadGLTFModel(url) {
@@ -539,6 +567,7 @@ export class CharacterModel {
   }
 
   createNameplate() {
+    if (typeof document === 'undefined') return;
     const canvas = document.createElement('canvas');
     canvas.width = 256;
     canvas.height = 64;

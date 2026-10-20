@@ -18,7 +18,10 @@ export class ProfilePage {
     const hours = Math.floor((p.stats.playtimeMinutes || 0) / 60);
     const mins = (p.stats.playtimeMinutes || 0) % 60;
     const playtimeStr = hours > 0 ? `${hours} jam ${mins} mnt` : `${mins} menit`;
-    const activeClass = (typeof localStorage !== 'undefined' ? localStorage.getItem('wildlands_player_class') : null) || 'Warrior';
+    const savedClass = typeof localStorage !== 'undefined' ? localStorage.getItem('wildlands_player_class') : null;
+    const savedModel = typeof localStorage !== 'undefined' ? localStorage.getItem('wildlands_player_model') : null;
+    const isMainCharacter = !savedClass || savedClass === 'Penjelajah' || savedClass === 'Explorer' || !savedModel || savedModel === 'main';
+    const activeClass = isMainCharacter ? 'Penjelajah' : savedClass;
 
     return `
       <div class="page-container">
@@ -115,6 +118,15 @@ export class ProfilePage {
           </div>
 
           <div class="rpg-classes-grid">
+            <div class="rpg-class-card ${isMainCharacter ? 'active' : ''}" data-model="main" data-class="Penjelajah">
+              <div class="class-card-top">
+                <span class="class-icon-badge">🤠</span>
+                <span class="class-badge-tag">${isMainCharacter ? 'AKTIF (UTAMA)' : 'PILIH'}</span>
+              </div>
+              <h4 class="class-name">Penjelajah (Utama)</h4>
+              <p class="class-desc">Karakter petualang utama dengan jaket hijau, ransel penjelajah, dan topi rimba Wildlands.</p>
+            </div>
+
             <div class="rpg-class-card ${activeClass === 'Warrior' ? 'active' : ''}" data-model="/models/rpg/Warrior.gltf" data-class="Warrior">
               <div class="class-card-top">
                 <span class="class-icon-badge">🗡️</span>

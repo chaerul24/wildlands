@@ -5,12 +5,13 @@ async function runBrowserVerification() {
 
   const browser = await puppeteer.launch({
     executablePath: '/usr/bin/chromium',
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu']
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
   });
 
   const page = await browser.newPage();
+  page.setDefaultNavigationTimeout(60000);
   await page.setViewport({ width: 1280, height: 720 });
-  await page.goto('http://localhost:3001', { waitUntil: 'domcontentloaded' });
+  await page.goto('http://127.0.0.1:3001', { waitUntil: 'domcontentloaded', timeout: 60000 });
   await new Promise(r => setTimeout(r, 2000));
 
   // Dismiss splash/loading
