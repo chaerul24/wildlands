@@ -31,3 +31,6 @@ Thumbs.db
 
 # Asset Download Cache
 .asset_cache/
+
+# QA test screenshots
+*.png

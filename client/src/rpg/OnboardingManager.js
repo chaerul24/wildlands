@@ -44,44 +44,31 @@ export class OnboardingManager {
   }
 
   createDOM() {
-    // 1. Splash Screen
-    this.splashEl = document.createElement('div');
-    this.splashEl.id = 'game-splash-screen';
-    this.splashEl.innerHTML = `
-      <div class="splash-content">
-        <div class="splash-icon">🌲</div>
-        <h1 class="splash-title">WILDLANDS</h1>
-        <p class="splash-subtitle">3D Open-World Action RPG Multiplayer</p>
-        <button id="btn-splash-enter" class="btn-splash-start" type="button">
-          MULAI PETUALANGAN [ENTER]
-        </button>
-        <span style="font-size: 11px; color: #64748b; margin-top: 10px;">Versi 2.4 • Asia-SE Official Realm</span>
-      </div>
-    `;
-    document.body.appendChild(this.splashEl);
+    // 1. Splash Screen (Re-use existing or fallback)
+    this.splashEl = document.getElementById('game-splash-screen');
+    if (!this.splashEl && typeof document !== 'undefined') {
+      this.splashEl = document.createElement('div');
+      this.splashEl.id = 'game-splash-screen';
+      document.body.appendChild(this.splashEl);
+    }
 
-    // 2. Loading Screen
-    this.loadingEl = document.createElement('div');
-    this.loadingEl.id = 'game-loading-screen';
-    this.loadingEl.style.display = 'none';
-    this.loadingEl.innerHTML = `
-      <div class="loading-container">
-        <div style="font-size: 32px; margin-bottom: 6px;">🌲</div>
-        <span class="loading-label" id="loading-status-text">Memuat Dunia Wildlands...</span>
-        <div class="loading-track">
-          <div class="loading-bar" id="loading-bar-fill"></div>
-        </div>
-        <span style="font-size: 11px; color: #64748b;" id="loading-pct-text">0%</span>
-      </div>
-    `;
-    document.body.appendChild(this.loadingEl);
+    // 2. Loading Screen (Re-use existing or fallback)
+    this.loadingEl = document.getElementById('game-loading-screen');
+    if (!this.loadingEl && typeof document !== 'undefined') {
+      this.loadingEl = document.createElement('div');
+      this.loadingEl.id = 'game-loading-screen';
+      this.loadingEl.style.display = 'none';
+      document.body.appendChild(this.loadingEl);
+    }
 
     // 3. Onboarding Modal
-    this.modalEl = document.createElement('div');
-    this.modalEl.id = 'onboarding-modal';
-    this.modalEl.className = 'onboarding-overlay';
-    this.modalEl.style.display = 'none';
-    this.modalEl.innerHTML = `
+    this.modalEl = document.getElementById('onboarding-modal');
+    if (!this.modalEl && typeof document !== 'undefined') {
+      this.modalEl = document.createElement('div');
+      this.modalEl.id = 'onboarding-modal';
+      this.modalEl.className = 'onboarding-overlay';
+      this.modalEl.style.display = 'none';
+      this.modalEl.innerHTML = `
       <div class="onboarding-card">
         <header class="onboarding-header">
           <span class="onboarding-step-badge" id="ob-step-badge">LANGKAH 1 DARI 5</span>
@@ -106,31 +93,19 @@ export class OnboardingManager {
         </footer>
       </div>
     `;
-    document.body.appendChild(this.modalEl);
-
-    // Wire Splash button
-    const btnSplash = this.splashEl.querySelector('#btn-splash-enter');
-    if (btnSplash) {
-      btnSplash.addEventListener('click', () => this.handleSplashEnter());
+      document.body.appendChild(this.modalEl);
     }
 
-    // Splash key listener
-    const onFirstKey = (e) => {
-      if (this.splashEl && this.splashEl.style.display !== 'none') {
-        window.removeEventListener('keydown', onFirstKey);
-        this.handleSplashEnter();
-      }
-    };
-    window.addEventListener('keydown', onFirstKey);
-
     // Wire Onboarding buttons
-    const btnSkip = this.modalEl.querySelector('#btn-ob-skip');
-    const btnNext = this.modalEl.querySelector('#btn-ob-next');
-    const btnPrev = this.modalEl.querySelector('#btn-ob-prev');
+    if (this.modalEl) {
+      const btnSkip = this.modalEl.querySelector('#btn-ob-skip');
+      const btnNext = this.modalEl.querySelector('#btn-ob-next');
+      const btnPrev = this.modalEl.querySelector('#btn-ob-prev');
 
-    if (btnSkip) btnSkip.onclick = () => this.finishOnboarding();
-    if (btnNext) btnNext.onclick = () => this.nextStep();
-    if (btnPrev) btnPrev.onclick = () => this.prevStep();
+      if (btnSkip) btnSkip.onclick = () => this.finishOnboarding();
+      if (btnNext) btnNext.onclick = () => this.nextStep();
+      if (btnPrev) btnPrev.onclick = () => this.prevStep();
+    }
   }
 
   handleSplashEnter() {

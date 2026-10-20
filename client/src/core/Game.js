@@ -25,6 +25,8 @@ import { AssetPreviewUI } from '../ui/AssetPreviewUI.js';
 import { RPG_ITEMS } from '../rpg/RPGConfig.js';
 import { AdaptiveQualityManager } from './AdaptiveQualityManager.js';
 import { PerformanceMonitor } from './PerformanceMonitor.js';
+import { BootManager } from '../opening/BootManager.js';
+import { AudioManager } from '../opening/AudioManager.js';
 
 export class Game {
   constructor() {
@@ -56,6 +58,8 @@ export class Game {
     this.lobby = null;
     this.hideout = null;
     this.enemyManager = null;
+    this.bootManager = null;
+    this.audioMgr = AudioManager.getInstance();
 
     // Performance & Diagnostics
     this.adaptiveQuality = null;
@@ -342,6 +346,12 @@ export class Game {
       // Ready for gameplay
     });
 
+    // 8k. Cinematic Game Opening Orchestrator (Boot -> Splash -> Loading -> Safehouse Lobby)
+    this.bootManager = new BootManager(this, () => {
+      console.log('[Game] Safehouse Lobby Ready after Opening Flow.');
+    });
+    this.bootManager.start();
+
     // 9. Resize & orientation listeners
     window.addEventListener('resize', () => this.onWindowResize());
     window.addEventListener('orientationchange', () => {
@@ -402,6 +412,10 @@ export class Game {
         this.lobby.data.saveLocal();
       }
     }
+
+    if (this.audioMgr) {
+      this.audioMgr.playBGM('loading', 0.5); // Open-world background ambiance
+    }
   }
 
   resumeGame() {
@@ -440,6 +454,9 @@ export class Game {
     }
     if (this.lobby && this.lobby.isInWorld) {
       this.lobby.returnToLobby();
+    }
+    if (this.audioMgr) {
+      this.audioMgr.playBGM('lobby', 1.0);
     }
   }
 

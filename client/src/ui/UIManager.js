@@ -1,3 +1,5 @@
+import { AudioManager } from '../opening/AudioManager.js';
+
 export class UIManager {
   constructor(callbacks = {}) {
     this.callbacks = callbacks; // { onStart, onResume, onQualityChange, onSensitivityChange, onLeave }
@@ -120,6 +122,43 @@ export class UIManager {
         btnToggleAnalog.textContent = isForced ? '🕹️ Analog: AKTIF' : '🕹️ Analog: NONAKTIF';
         this.showToast(isForced ? 'Kontrol Analog Diaktifkan' : 'Kontrol Analog Dinonaktifkan', 'info');
       });
+    }
+
+    // Centrally managed Audio Sliders & Mute Button
+    try {
+      const audioMgr = AudioManager.getInstance();
+      const sliderMaster = document.getElementById('slider-volume-master');
+      const sliderBgm = document.getElementById('slider-volume-bgm');
+      const sliderSfx = document.getElementById('slider-volume-sfx');
+      const btnMute = document.getElementById('btn-toggle-mute');
+
+      if (sliderMaster && audioMgr.config) {
+        sliderMaster.value = audioMgr.config.masterVolume;
+        sliderMaster.addEventListener('input', (e) => {
+          audioMgr.setMasterVolume(parseFloat(e.target.value));
+        });
+      }
+      if (sliderBgm && audioMgr.config) {
+        sliderBgm.value = audioMgr.config.bgmVolume;
+        sliderBgm.addEventListener('input', (e) => {
+          audioMgr.setBGMVolume(parseFloat(e.target.value));
+        });
+      }
+      if (sliderSfx && audioMgr.config) {
+        sliderSfx.value = audioMgr.config.sfxVolume;
+        sliderSfx.addEventListener('input', (e) => {
+          audioMgr.setSFXVolume(parseFloat(e.target.value));
+        });
+      }
+      if (btnMute && audioMgr.config) {
+        btnMute.textContent = audioMgr.isMuted() ? '🔇 Bisu (Muted)' : '🔊 Suara: AKTIF';
+        btnMute.addEventListener('click', () => {
+          const isMuted = audioMgr.toggleMute();
+          btnMute.textContent = isMuted ? '🔇 Bisu (Muted)' : '🔊 Suara: AKTIF';
+        });
+      }
+    } catch (e) {
+      console.warn('[UIManager] Audio settings bind skipped:', e);
     }
   }
 

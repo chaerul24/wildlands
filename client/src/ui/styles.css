@@ -3762,119 +3762,559 @@ body, html {
   border-color: #60a5fa;
 }
 
-/* 5. Splash Screen & Loading Flow */
-#game-splash-screen {
-  position: absolute;
+/* ==========================================================================
+   5. CINEMATIC SPLASH SCREEN & REALISTIC LOADING FLOW (WILDLANDS RPG)
+   ========================================================================== */
+
+/* Fullscreen Cinematic Splash Overlay */
+#game-splash-screen,
+.cinematic-splash-overlay {
+  position: fixed;
   inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at center, #13222f 0%, #080d12 100%);
-  z-index: 100;
-  transition: opacity 0.5s ease, visibility 0.5s;
+  background: #060b0e;
+  overflow: hidden;
+  transition: opacity 0.45s ease-out, visibility 0.45s;
   pointer-events: auto;
+  user-select: none;
 }
 
-.splash-content {
+.splash-particles-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.splash-backdrop-gradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 40%, rgba(16, 185, 129, 0.14) 0%, rgba(10, 22, 19, 0.65) 45%, #050a0d 85%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.splash-fantasy-silhouette {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 38vh;
+  background: linear-gradient(to top, rgba(3, 7, 9, 0.95) 0%, rgba(6, 16, 13, 0.45) 55%, transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.splash-top-bar {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  display: flex;
+  gap: 10px;
+  z-index: 10;
+}
+
+.splash-pill-btn {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  color: #cbd5e1;
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.splash-pill-btn:hover {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: rgba(52, 211, 153, 0.7);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.splash-pill-btn.skip {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #fde68a;
+}
+
+.splash-hero-container {
+  position: relative;
+  z-index: 5;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 18px;
+  max-width: 680px;
+  width: 90vw;
+  padding: 20px;
+  animation: splashHeroEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.splash-icon {
-  font-size: 64px;
-  filter: drop-shadow(0 0 25px rgba(52, 211, 153, 0.5));
-  animation: bounceSlow 3s infinite ease-in-out;
+@keyframes splashHeroEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-@keyframes bounceSlow {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+.splash-crest-wrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
 }
 
-.splash-title {
-  font-size: 44px;
-  font-weight: 900;
-  letter-spacing: 4px;
-  background: linear-gradient(135deg, #34d399, #10b981, #059669);
+.splash-emblem-ring {
+  position: absolute;
+  inset: 0;
+  border: 2px dashed rgba(52, 211, 153, 0.45);
+  border-radius: 50%;
+  animation: ringSpinSlow 24s linear infinite;
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
+}
+
+@keyframes ringSpinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.splash-crest-icon {
+  font-size: 42px;
+  filter: drop-shadow(0 0 16px rgba(52, 211, 153, 0.7));
+}
+
+.splash-game-title {
+  font-size: clamp(38px, 6vw, 68px);
+  font-weight: 950;
+  letter-spacing: clamp(6px, 1.2vw, 12px);
+  margin: 0;
+  background: linear-gradient(180deg, #ffffff 0%, #a7f3d0 40%, #34d399 75%, #059669 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 18px rgba(0, 0, 0, 0.85));
 }
 
-.splash-subtitle {
+.splash-divider-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 320px;
+  gap: 12px;
+  margin: 10px 0 8px 0;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.5), transparent);
+}
+
+.divider-gem {
   font-size: 14px;
-  font-weight: 600;
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
+}
+
+.splash-tagline {
+  font-size: clamp(11px, 2vw, 13px);
+  font-weight: 700;
+  letter-spacing: 3.5px;
   color: #94a3b8;
+  text-transform: uppercase;
+  margin: 0 0 6px 0;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+}
+
+.splash-subtitle-badge {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 800;
   letter-spacing: 1.5px;
+  color: #6ee7b7;
+  background: rgba(6, 78, 59, 0.4);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  padding: 4px 14px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.btn-splash-cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 34px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #04130d;
+  background: linear-gradient(135deg, #6ee7b7 0%, #34d399 50%, #10b981 100%);
+  border: 1px solid #a7f3d0;
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: 0 8px 30px rgba(16, 185, 129, 0.45), 0 0 15px rgba(52, 211, 153, 0.4) inset;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.btn-splash-cta:hover,
+.btn-splash-cta:focus {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 12px 38px rgba(16, 185, 129, 0.65), 0 0 20px rgba(110, 231, 183, 0.6) inset;
+  outline: none;
+}
+
+.btn-splash-cta .cta-glow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.btn-splash-cta:hover .cta-glow {
+  opacity: 1;
+}
+
+.cta-shortcut {
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.75;
+  margin-left: 2px;
+}
+
+.splash-footer-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+  font-size: 11.5px;
+  color: #64748b;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.realm-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  border: 1px solid rgba(52, 211, 153, 0.2);
+}
+
+/* ==========================================================================
+   6. CINEMATIC LOADING SCREEN & PROGRESS PIPELINE
+   ========================================================================== */
+
+#game-loading-screen,
+.cinematic-loading-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 950;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #070d11;
+  overflow: hidden;
+  transition: opacity 0.4s ease-out, visibility 0.4s;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.loading-bg-layer {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 45%, rgba(15, 30, 25, 0.75) 0%, #050a0d 80%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.loading-vignette-layer {
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.loading-top-bar {
+  position: absolute;
+  top: 18px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+}
+
+.loading-realm-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 1px;
   text-transform: uppercase;
 }
 
-.btn-splash-start {
-  margin-top: 15px;
-  padding: 14px 38px;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  color: #0b1319;
-  background: linear-gradient(135deg, #34d399, #10b981);
-  border: 1px solid #6ee7b7;
+.realm-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 10px #10b981;
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.loading-pill-btn {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  color: #cbd5e1;
   border-radius: 9999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   cursor: pointer;
-  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
-  transition: all 0.2s;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
 }
 
-.btn-splash-start:hover {
-  transform: scale(1.05);
-  box-shadow: 0 14px 32px rgba(16, 185, 129, 0.55);
+.loading-pill-btn:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(52, 211, 153, 0.6);
+  color: #fff;
 }
 
-/* 6. Realistic Loading Screen */
-#game-loading-screen {
-  position: absolute;
-  inset: 0;
+.loading-center-card {
+  position: relative;
+  z-index: 5;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  background: #090f14;
-  z-index: 95;
-  transition: opacity 0.4s ease, visibility 0.4s;
-  pointer-events: auto;
+  width: 440px;
+  max-width: 90vw;
+  background: rgba(13, 23, 29, 0.85);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  border-radius: 16px;
+  padding: 28px 24px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(16, 185, 129, 0.1);
 }
 
-.loading-container {
-  width: 380px;
-  max-width: 85vw;
+.loading-emblem-box {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
   text-align: center;
 }
 
-.loading-label {
-  font-size: 13px;
+.loading-emblem-icon {
+  font-size: 40px;
+  filter: drop-shadow(0 0 12px rgba(52, 211, 153, 0.5));
+  margin-bottom: 6px;
+}
+
+.loading-card-title {
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #f8fafc;
+  margin: 0 0 4px 0;
+  text-transform: uppercase;
+}
+
+.loading-card-sub {
+  font-size: 12px;
+  color: #64748b;
   font-weight: 600;
-  color: #cbd5e1;
+  letter-spacing: 0.5px;
+}
+
+.loading-progress-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
 }
 
 .loading-track {
   width: 100%;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  height: 10px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(52, 211, 153, 0.25);
   border-radius: 9999px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
 }
 
 .loading-bar {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #10b981, #34d399);
-  transition: width 0.25s ease-out;
+  background: linear-gradient(90deg, #059669 0%, #10b981 50%, #34d399 100%);
+  border-radius: 9999px;
+  transition: width 0.18s ease-out;
+  position: relative;
+}
+
+.loading-bar-glow {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7));
+  filter: blur(2px);
+}
+
+.loading-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.loading-status-msg {
+  color: #cbd5e1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 78%;
+}
+
+.loading-pct-num {
+  color: #34d399;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.loading-tips-card {
+  width: 100%;
+  background: rgba(8, 15, 20, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 12px 14px;
+  text-align: left;
+}
+
+.tips-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.tips-badge {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #fbbf24;
+  letter-spacing: 1px;
+}
+
+.tips-content-text {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #94a3b8;
+  min-height: 35px;
+  transition: opacity 0.25s ease;
+}
+
+.loading-error-modal {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 10, 14, 0.92);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+}
+
+.error-modal-box {
+  background: #0d171d;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 14px;
+  padding: 22px;
+  width: 360px;
+  max-width: 85vw;
+  text-align: center;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+}
+
+.error-modal-icon {
+  font-size: 34px;
+  margin-bottom: 8px;
+  display: inline-block;
+}
+
+.error-modal-title {
+  margin: 0 0 6px 0;
+  font-size: 16px;
+  color: #f87171;
+  font-weight: 800;
+}
+
+.error-modal-desc {
+  margin: 0 0 16px 0;
+  font-size: 12px;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.error-actions-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
 }
 
 /* 7. Onboarding Tutorial Modal */
