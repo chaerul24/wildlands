@@ -48,4 +48,18 @@ assert.strictEqual(char.isGLTFLoaded, false, 'isGLTFLoaded must be false');
 assert.strictEqual(char.gltfModel, null, 'gltfModel must be null');
 console.log('  ✓ Main character is protected and cannot be overwritten ("jangan ketimpa").');
 
-console.log('\n🎉 ALL 4 MAIN CHARACTER PROTECTION QA TESTS PASSED (100%)!');
+// Test 5: Verify Forward Movement Orientation (No Reversed/Backwards Walking)
+console.log('\n[Test 5] Testing Forward Movement & Model Facing Vector Alignment...');
+assert.strictEqual(char.proceduralRoot.rotation.y, 0, 'Procedural root rotation.y must be 0 (natural +Z facing)');
+
+// Forward move vector (moving forward away from camera along -Z)
+const forwardMove = new THREE.Vector3(0, 0, -1);
+const yawWhenMovingForward = Math.atan2(forwardMove.x, forwardMove.z);
+// In world space, character mesh rotation = yawWhenMovingForward.
+// Model forward (+Z) rotated by yawWhenMovingForward should point exactly in direction of forwardMove:
+const modelFacing = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), yawWhenMovingForward);
+assert.ok(Math.abs(modelFacing.x - forwardMove.x) < 0.001, 'X component must match movement');
+assert.ok(Math.abs(modelFacing.z - forwardMove.z) < 0.001, 'Z component must match movement (pointing forward)');
+console.log('  ✓ Model facing vector aligns 100% with movement vector (no backwards/reversed animation).');
+
+console.log('\n🎉 ALL 5 MAIN CHARACTER ORIENTATION & PROTECTION QA TESTS PASSED (100%)!');

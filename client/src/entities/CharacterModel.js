@@ -350,8 +350,8 @@ export class CharacterModel {
       roughness: 0.9
     });
 
-    // Orient procedural root to standard forward (-Z) matching GLTF model
-    this.proceduralRoot.rotation.y = Math.PI;
+    // Natural forward orientation (+Z facing) matching Player movement vector (Math.atan2) and camera
+    this.proceduralRoot.rotation.y = 0;
 
     // 1. Pelvis / Hips (Root anchor at Y = 0.96m above ground)
     const pelvis = new THREE.Group();
