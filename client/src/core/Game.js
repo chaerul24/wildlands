@@ -23,13 +23,18 @@ import { ShopUI } from '../rpg/ShopUI.js';
 import { Minimap } from '../ui/Minimap.js';
 import { AssetPreviewUI } from '../ui/AssetPreviewUI.js';
 import { RPG_ITEMS } from '../rpg/RPGConfig.js';
+import { AdaptiveQualityManager } from './AdaptiveQualityManager.js';
+import { PerformanceMonitor } from './PerformanceMonitor.js';
 
 export class Game {
   constructor() {
     this.canvas = document.getElementById('game-canvas');
-    this.qualityPreset = 'medium';
+    // Android / mobile automatic detection
+    const isMobileAndroid = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
+    this.qualityPreset = isMobileAndroid ? 'medium' : 'high';
     this.isRunning = false;
     this.isPaused = false;
+    this.isContextLost = false;
 
     // Core Three.js components
     this.scene = null;
@@ -51,6 +56,10 @@ export class Game {
     this.lobby = null;
     this.hideout = null;
     this.enemyManager = null;
+
+    // Performance & Diagnostics
+    this.adaptiveQuality = null;
+    this.perfMonitor = null;
 
     // RPG Subsystems
     this.inventory = null;
@@ -86,11 +95,39 @@ export class Game {
       powerPreference: 'high-performance'
     });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.15;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    // WebGL Context Loss Handlers (Android lifecycle resilience)
+    this.canvas.addEventListener('webglcontextlost', (e) => {
+      e.preventDefault();
+      console.warn('[Game] WebGL Context Lost! Pausing rendering.');
+      this.isContextLost = true;
+    }, false);
+
+    this.canvas.addEventListener('webglcontextrestored', () => {
+      console.log('[Game] WebGL Context Restored! Reinitializing render state.');
+      this.isContextLost = false;
+      this.setQuality(this.qualityPreset);
+    }, false);
+
+    // Tab Visibility change
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        this.clock.stop();
+      } else {
+        this.clock.start();
+      }
+    });
+
+    // Performance & Adaptive Quality
+    this.adaptiveQuality = new AdaptiveQualityManager(this, { autoAdaptive: true });
+    this.perfMonitor = new PerformanceMonitor(this.renderer, this.adaptiveQuality);
+
+    // Apply initial profile
+    this.setQuality(this.qualityPreset);
 
     // 4. World Subsystems
     this.terrain = new Terrain(this.scene);
@@ -434,13 +471,25 @@ export class Game {
     if (this.atmosphere) {
       this.atmosphere.setQuality(preset);
     }
+    if (this.vegetation) {
+      this.vegetation.setQuality(preset);
+    }
 
     if (preset === 'low') {
       this.renderer.setPixelRatio(1.0);
       this.renderer.shadowMap.enabled = false;
-    } else {
-      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, preset === 'high' ? 2 : 1.5));
+    } else if (preset === 'medium') {
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
       this.renderer.shadowMap.enabled = true;
+      this.renderer.shadowMap.type = THREE.PCFShadowMap;
+    } else {
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.0));
+      this.renderer.shadowMap.enabled = true;
+      this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    }
+
+    if (this.ui && this.ui.selectPauseQuality) {
+      this.ui.selectPauseQuality.value = preset;
     }
   }
 
@@ -465,8 +514,10 @@ export class Game {
     }
     if (this.qualityPreset === 'low') {
       this.renderer.setPixelRatio(1.0);
+    } else if (this.qualityPreset === 'medium') {
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
     } else {
-      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.qualityPreset === 'high' ? 2 : 1.5));
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.0));
     }
     if (this.ui) {
       this.ui.updateMobileControlsVisibility();
@@ -475,8 +526,15 @@ export class Game {
 
   animate() {
     requestAnimationFrame(() => this.animate());
+    if (this.isContextLost) return;
 
-    const dt = this.clock.getDelta();
+    let dt = this.clock.getDelta();
+    if (dt > 0.1) dt = 0.1; // Delta time clamping
+
+    // Update adaptive quality moving average
+    if (this.adaptiveQuality) {
+      this.adaptiveQuality.update(dt);
+    }
 
     if (this.isRunning && !this.isPaused && this.player) {
       const prevX = this.player.position.x;
@@ -509,8 +567,9 @@ export class Game {
         }
       }
 
-      // 2. Camera tracking
-      this.cameraController.update(this.player.position, mouseDelta, dt);
+      // 2. Third-person camera tracking with smooth auto-follow & anti-clipping
+      const isPlayerMoving = this.player.velocity ? this.player.velocity.lengthSq() > 0.05 : false;
+      this.cameraController.update(this.player.position, mouseDelta, dt, this.player.yaw, isPlayerMoving);
 
       // 3. Atmosphere shadows centered on player
       this.atmosphere.update(this.player.position);
@@ -522,8 +581,6 @@ export class Game {
       this.ui.updateHUD(this.latestNetworkStatus, this.player.position);
 
       // 5b. Update RPG Subsystems (Loot proximity, Dialogue proximity, Quest location checks)
-      const isSprinting = this.input.keys.ShiftLeft || this.input.keys.ShiftRight || this.input.isTouchSprinting;
-
       if (this.lootManager) {
         this.lootManager.update(dt, this.player.position);
       }
@@ -537,12 +594,16 @@ export class Game {
         this.minimap.update(this.player, dt);
       }
 
-      // 6. Update animated landmarks & vegetation wind sway
+      // 6. Update animated landmarks & forward-culling vegetation
       if (this.buildings) {
         this.buildings.update(dt, this.clock.getElapsedTime());
       }
       if (this.vegetation) {
-        this.vegetation.update(this.clock.getElapsedTime());
+        const camDir = new THREE.Vector3();
+        this.camera.getWorldDirection(camDir);
+        camDir.y = 0;
+        camDir.normalize();
+        this.vegetation.update(this.clock.getElapsedTime(), this.player.position, camDir);
       }
       if (this.npcManager) {
         this.npcManager.update(dt, this.clock.getElapsedTime(), this.player.position);
@@ -556,11 +617,19 @@ export class Game {
 
       // 7. Render open-world gameplay frame
       this.renderer.render(this.scene, this.camera);
+
+      // 8. Performance diagnostics overlay
+      if (this.perfMonitor) {
+        this.perfMonitor.update(this.qualityPreset);
+      }
     } else {
       // LOBBY MODE: Render 3D Hideout Safehouse Scene & Full-Body Character Showcase!
       if (this.hideout) {
         this.hideout.update(dt, this.clock.getElapsedTime());
         this.renderer.render(this.hideout.scene, this.hideout.camera);
+        if (this.perfMonitor) {
+          this.perfMonitor.update(this.qualityPreset);
+        }
       }
     }
   }

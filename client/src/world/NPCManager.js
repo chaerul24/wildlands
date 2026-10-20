@@ -424,9 +424,28 @@ export class NPCCharacter {
       this.playAction(targetClip);
     }
 
-    // 3. Advance SkinnedMesh Animation Mixer
+    // 3. Advance SkinnedMesh Animation Mixer with Distance-Based Throttling (saves mobile CPU)
     if (this.mixer) {
-      this.mixer.update(dt);
+      this._animTick = (this._animTick || 0) + 1;
+      let distToPlayer = 0;
+      if (playerPos) {
+        distToPlayer = Math.hypot(playerPos.x - this.position.x, playerPos.z - this.position.z);
+      }
+
+      if (this.isTalking || distToPlayer <= 35) {
+        // Full frame rate for nearby NPCs and active dialogue
+        this.mixer.update(dt);
+      } else if (distToPlayer <= 85) {
+        // 30Hz frame rate for mid-distance NPCs
+        if (this._animTick % 2 === 0) {
+          this.mixer.update(dt * 2);
+        }
+      } else if (distToPlayer <= 140) {
+        // 15Hz frame rate for far NPCs
+        if (this._animTick % 4 === 0) {
+          this.mixer.update(dt * 4);
+        }
+      }
     }
 
     // 4. Grounding & Orientation

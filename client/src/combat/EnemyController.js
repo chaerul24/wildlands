@@ -377,9 +377,21 @@ export class EnemyController {
     if (dt > 0.1) dt = 0.1;
     this.stateTime += dt;
 
-    // Advance Animation Mixer
+    // Advance Animation Mixer with distance-based throttling for distant patrolling enemies
     if (this.mixer) {
-      this.mixer.update(dt);
+      this._animTick = (this._animTick || 0) + 1;
+      const isAggressive = this.state === 'CHASE' || this.state === 'ATTACK' || this.state === 'HIT_REACT';
+      if (isAggressive || this.distToPlayer <= 35) {
+        this.mixer.update(dt);
+      } else if (this.distToPlayer <= 80) {
+        if (this._animTick % 2 === 0) {
+          this.mixer.update(dt * 2);
+        }
+      } else {
+        if (this._animTick % 4 === 0) {
+          this.mixer.update(dt * 4);
+        }
+      }
     }
 
     // Advance attack cooldown

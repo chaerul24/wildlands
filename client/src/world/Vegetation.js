@@ -2,17 +2,26 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
+/**
+ * Optimized Open-World Vegetation & Scenery System:
+ * - Spatial Grid Chunking (6x6 cells of 80m x 80m) enables Three.js automatic frustum culling.
+ * - Forward-focused Distance Culling & Fine-Grained Grass LOD with Hysteresis.
+ * - Single GPU vertex shader horizontal wind wave animation.
+ * - Android Performance Profiles (Low, Medium, High).
+ */
 export class Vegetation {
   constructor(scene, terrain, densityPreset = 'medium') {
     this.scene = scene;
     this.terrain = terrain;
     this.densityPreset = densityPreset;
-    this.loader = new GLTFLoader();
+    this.loader = typeof window !== 'undefined' ? new GLTFLoader() : null;
 
     this.instancedMeshes = [];
     this.grassMeshes = [];
     this.treeFoliageMeshes = [];
+    this.chunks = [];
     this.windUniforms = { uTime: { value: 0 } };
+    this.cullTick = 0;
 
     // Density configuration
     this.counts = {
@@ -29,7 +38,63 @@ export class Vegetation {
       this.counts = { pine: 750, oak: 450, bush: 650, grass: 3600, rock: 240 };
     }
 
+    this.setQuality(this.densityPreset);
+    this.setupSpatialChunks();
     this.init();
+  }
+
+  setQuality(preset) {
+    this.densityPreset = preset;
+    if (preset === 'low') {
+      this.cullingLimits = { maxView: 120, maxGrass: 42 };
+    } else if (preset === 'high') {
+      this.cullingLimits = { maxView: 280, maxGrass: 105 };
+    } else {
+      this.cullingLimits = { maxView: 180, maxGrass: 68 };
+    }
+  }
+
+  setupSpatialChunks() {
+    this.chunkSize = 80;
+    this.gridMin = -240;
+    this.gridMax = 240;
+    this.gridCols = 6;
+    this.gridRows = 6;
+    this.chunks = [];
+
+    for (let r = 0; r < this.gridRows; r++) {
+      for (let c = 0; c < this.gridCols; c++) {
+        const minX = this.gridMin + c * this.chunkSize;
+        const maxX = minX + this.chunkSize;
+        const minZ = this.gridMin + r * this.chunkSize;
+        const maxZ = minZ + this.chunkSize;
+        const centerX = minX + this.chunkSize * 0.5;
+        const centerZ = minZ + this.chunkSize * 0.5;
+
+        const group = new THREE.Group();
+        group.name = `VegChunk_${c}_${r}`;
+        this.scene.add(group);
+
+        this.chunks.push({
+          col: c,
+          row: r,
+          minX, maxX, minZ, maxZ,
+          centerX, centerZ,
+          group,
+          instancedMeshes: [],
+          grassMeshes: [],
+          visible: true,
+          grassVisible: true
+        });
+      }
+    }
+  }
+
+  getChunkIndexForPosition(x, z) {
+    const c = Math.floor((x - this.gridMin) / this.chunkSize);
+    const r = Math.floor((z - this.gridMin) / this.chunkSize);
+    if (c < 0 || c >= this.gridCols || r < 0 || r >= this.gridRows) return -1;
+    return r * this.gridCols + c;
   }
 
   init() {
@@ -86,9 +151,6 @@ export class Vegetation {
     this.loadNatureModels();
   }
 
-  /**
-   * Generates natural scattered transforms avoiding roads, spawn area, and landmarks
-   */
   generateTransforms(count, options) {
     const list = [];
     const dummy = new THREE.Object3D();
@@ -194,7 +256,7 @@ export class Vegetation {
       side: THREE.DoubleSide
     });
 
-    // GPU vertex-shader based horizontal wind sway (roots stay firmly at Y=0, only tips bend sideways)
+    // GPU vertex-shader based horizontal wind sway
     grassMat.onBeforeCompile = (shader) => {
       shader.uniforms.uTime = this.windUniforms.uTime;
       shader.vertexShader = 'uniform float uTime;\n' + shader.vertexShader;
@@ -204,16 +266,12 @@ export class Vegetation {
           '#include <begin_vertex>',
           '#ifdef USE_INSTANCING',
           '  vec3 instPos = vec3(instanceMatrix[3][0], instanceMatrix[3][1], instanceMatrix[3][2]);',
-          '  // Natural rolling breeze wave rippling across the meadow terrain',
           '  float windWave = sin(uTime * 2.2 + (instPos.x * 0.14 + instPos.z * 0.10));',
           '  float windGust = cos(uTime * 1.5 + (instPos.x * 0.08 - instPos.z * 0.12));',
-          '  // Quadratic height factor: root (transformed.y <= 0) stays 100% glued to ground, tip bends',
           '  float swayFactor = clamp((transformed.y + 0.05) * 2.4, 0.0, 1.0);',
           '  swayFactor = swayFactor * swayFactor;',
-          '  // Horizontal sway across X and Z (bergoyang ke samping)',
           '  transformed.x += (windWave * 0.15 + windGust * 0.05) * swayFactor;',
           '  transformed.z += (windWave * 0.08 + windGust * 0.12) * swayFactor;',
-          '  // Subtle natural arc preservation (bukan naik turun)',
           '  transformed.y -= abs(windWave) * 0.02 * swayFactor;',
           '#endif'
         ].join('\n')
@@ -221,7 +279,7 @@ export class Vegetation {
     };
 
     const bushMat = new THREE.MeshStandardMaterial({
-      color: 0x396c28, // Lush shrub green
+      color: 0x396c28,
       roughness: 0.85,
       metalness: 0.02
     });
@@ -246,7 +304,7 @@ export class Vegetation {
     };
 
     const rockMat = new THREE.MeshStandardMaterial({
-      color: 0x666d73, // Granite rock stone
+      color: 0x666d73,
       roughness: 0.92,
       metalness: 0.02
     });
@@ -260,16 +318,10 @@ export class Vegetation {
         const trunkSub = submeshes.find(s => s.mat.toLowerCase().includes('wood') || s.mat.toLowerCase().includes('bark') || s.name.includes('1'));
 
         if (trunkSub) {
-          const trunkMesh = this.createInstancedMesh(trunkSub.geo, pineTrunkMat, this.transforms.pines, true);
-          this.scene.add(trunkMesh);
-          this.instancedMeshes.push(trunkMesh);
+          this.createChunkedInstancedMeshes(trunkSub.geo, pineTrunkMat, this.transforms.pines, true);
         }
-
         if (foliageSub) {
-          const foliageMesh = this.createInstancedMesh(foliageSub.geo, pineFoliageMat, this.transforms.pines, true, 0x224c26);
-          this.scene.add(foliageMesh);
-          this.instancedMeshes.push(foliageMesh);
-          this.treeFoliageMeshes.push(foliageMesh);
+          this.createChunkedInstancedMeshes(foliageSub.geo, pineFoliageMat, this.transforms.pines, true, 0x224c26);
         }
       },
       () => this.createProceduralPineTrees(this.transforms.pines, pineTrunkMat, pineFoliageMat)
@@ -284,48 +336,36 @@ export class Vegetation {
         const trunkSub = submeshes.find(s => s.mat.toLowerCase().includes('wood') || s.mat.toLowerCase().includes('bark') || s.name.includes('1'));
 
         if (trunkSub) {
-          const trunkMesh = this.createInstancedMesh(trunkSub.geo, oakTrunkMat, this.transforms.oaks, true);
-          this.scene.add(trunkMesh);
-          this.instancedMeshes.push(trunkMesh);
+          this.createChunkedInstancedMeshes(trunkSub.geo, oakTrunkMat, this.transforms.oaks, true);
         }
-
         if (foliageSub) {
-          const foliageMesh = this.createInstancedMesh(foliageSub.geo, oakFoliageMat, this.transforms.oaks, true, 0x3d7a2e);
-          this.scene.add(foliageMesh);
-          this.instancedMeshes.push(foliageMesh);
-          this.treeFoliageMeshes.push(foliageMesh);
+          this.createChunkedInstancedMeshes(foliageSub.geo, oakFoliageMat, this.transforms.oaks, true, 0x3d7a2e);
         }
       },
       () => this.createProceduralOakTrees(this.transforms.oaks, oakTrunkMat, oakFoliageMat)
     );
 
-    // 3. True 3D Grass Tufts (No flat cards or diamond quads!)
+    // 3. True 3D Grass Tufts
     this.loadModelWithInstancing(
       '/grass_leafsLarge.glb',
       this.transforms.grass,
       (submeshes) => {
         if (submeshes.length > 0) {
           const grassGeo = submeshes[0].geo;
-          const grassMesh = this.createInstancedMesh(grassGeo, grassMat, this.transforms.grass, false, 0x4d912c, true);
-          grassMesh.receiveShadow = true;
-          this.scene.add(grassMesh);
-          this.instancedMeshes.push(grassMesh);
-          this.grassMeshes.push(grassMesh);
+          this.createChunkedInstancedMeshes(grassGeo, grassMat, this.transforms.grass, false, 0x4d912c, true);
         }
       },
       () => this.createProcedural3DGrass(this.transforms.grass, grassMat)
     );
 
-    // 4. Wild Bushes / Shrubs
+    // 4. Wild Bushes
     this.loadModelWithInstancing(
       '/plant_bushDetailed.glb',
       this.transforms.bushes,
       (submeshes) => {
         if (submeshes.length > 0) {
           const bushGeo = submeshes[0].geo;
-          const bushMesh = this.createInstancedMesh(bushGeo, bushMat, this.transforms.bushes, true, 0x396c28);
-          this.scene.add(bushMesh);
-          this.instancedMeshes.push(bushMesh);
+          this.createChunkedInstancedMeshes(bushGeo, bushMat, this.transforms.bushes, true, 0x396c28);
         }
       },
       () => this.createProceduralBushes(this.transforms.bushes, bushMat)
@@ -339,9 +379,7 @@ export class Vegetation {
         if (submeshes.length > 0) {
           const geos = submeshes.map(s => s.geo);
           const mergedGeo = BufferGeometryUtils.mergeGeometries(geos, false) || geos[0];
-          const rockMesh = this.createInstancedMesh(mergedGeo, rockMat, this.transforms.rocks, true);
-          this.scene.add(rockMesh);
-          this.instancedMeshes.push(rockMesh);
+          this.createChunkedInstancedMeshes(mergedGeo, rockMat, this.transforms.rocks, true);
         }
       },
       null
@@ -349,6 +387,10 @@ export class Vegetation {
   }
 
   loadModelWithInstancing(url, transforms, onSuccess, onFallback) {
+    if (typeof window === 'undefined' || !this.loader) {
+      if (onFallback) onFallback();
+      return;
+    }
     this.loader.load(
       url,
       (gltf) => {
@@ -379,13 +421,43 @@ export class Vegetation {
     );
   }
 
-  /**
-   * Creates an InstancedMesh with transforms and subtle natural color variation
-   */
+  createChunkedInstancedMeshes(geometry, material, transforms, castShadow = true, baseColorHex = null, isGrass = false) {
+    const chunkBins = Array.from({ length: this.chunks.length }, () => []);
+
+    for (let i = 0; i < transforms.length; i++) {
+      const t = transforms[i];
+      const idx = this.getChunkIndexForPosition(t.position.x, t.position.z);
+      if (idx >= 0 && idx < this.chunks.length) {
+        chunkBins[idx].push(t);
+      }
+    }
+
+    for (let idx = 0; idx < this.chunks.length; idx++) {
+      const chunkTransforms = chunkBins[idx];
+      if (chunkTransforms.length === 0) continue;
+
+      const chunk = this.chunks[idx];
+      const mesh = this.createInstancedMesh(geometry, material, chunkTransforms, castShadow, baseColorHex, isGrass);
+      
+      mesh.geometry.computeBoundingBox();
+      mesh.geometry.computeBoundingSphere();
+      
+      chunk.group.add(mesh);
+      chunk.instancedMeshes.push(mesh);
+      this.instancedMeshes.push(mesh);
+
+      if (isGrass) {
+        chunk.grassMeshes.push(mesh);
+        this.grassMeshes.push(mesh);
+      }
+    }
+  }
+
   createInstancedMesh(geometry, material, transforms, castShadow = true, baseColorHex = null, receiveOnly = false) {
     const mesh = new THREE.InstancedMesh(geometry, material, transforms.length);
     mesh.castShadow = castShadow && !receiveOnly;
     mesh.receiveShadow = true;
+    mesh.frustumCulled = true;
 
     const baseColor = baseColorHex ? new THREE.Color(baseColorHex) : null;
     const tempColor = new THREE.Color();
@@ -394,7 +466,6 @@ export class Vegetation {
       mesh.setMatrixAt(i, transforms[i].matrix);
 
       if (baseColor) {
-        // Natural organic color variations (slight hue shift, lightness and saturation jitter)
         tempColor.copy(baseColor).offsetHSL(
           (Math.random() - 0.5) * 0.08,
           (Math.random() - 0.5) * 0.12,
@@ -415,7 +486,6 @@ export class Vegetation {
   /* ================= PROCEDURAL 3D FALLBACK GENERATORS ================= */
 
   createProceduralPineTrees(transforms, trunkMat, foliageMat) {
-    // Procedural multi-tiered pine tree with properly indexed cone clusters
     const trunkGeo = new THREE.CylinderGeometry(0.35, 0.55, 4.2, 8);
     trunkGeo.translate(0, 2.1, 0);
 
@@ -428,12 +498,8 @@ export class Vegetation {
 
     const foliageGeo = BufferGeometryUtils.mergeGeometries([c1, c2, c3], false);
 
-    const trunkMesh = this.createInstancedMesh(trunkGeo, trunkMat, transforms, true);
-    const foliageMesh = this.createInstancedMesh(foliageGeo, foliageMat, transforms, true, 0x224c26);
-
-    this.scene.add(trunkMesh, foliageMesh);
-    this.instancedMeshes.push(trunkMesh, foliageMesh);
-    this.treeFoliageMeshes.push(foliageMesh);
+    this.createChunkedInstancedMeshes(trunkGeo, trunkMat, transforms, true);
+    this.createChunkedInstancedMeshes(foliageGeo, foliageMat, transforms, true, 0x224c26);
   }
 
   createProceduralOakTrees(transforms, trunkMat, foliageMat) {
@@ -449,16 +515,11 @@ export class Vegetation {
 
     const foliageGeo = BufferGeometryUtils.mergeGeometries([f1, f2, f3], false);
 
-    const trunkMesh = this.createInstancedMesh(trunkGeo, trunkMat, transforms, true);
-    const foliageMesh = this.createInstancedMesh(foliageGeo, foliageMat, transforms, true, 0x3d7a2e);
-
-    this.scene.add(trunkMesh, foliageMesh);
-    this.instancedMeshes.push(trunkMesh, foliageMesh);
-    this.treeFoliageMeshes.push(foliageMesh);
+    this.createChunkedInstancedMeshes(trunkGeo, trunkMat, transforms, true);
+    this.createChunkedInstancedMeshes(foliageGeo, foliageMat, transforms, true, 0x3d7a2e);
   }
 
   createProcedural3DGrass(transforms, grassMat) {
-    // True 3D curved triangular ribbon grass blades (NO flat square cards!)
     const blades = [];
     const bladeCount = 7;
 
@@ -473,13 +534,10 @@ export class Vegetation {
       const perpZ = cos * 0.04;
 
       const positions = new Float32Array([
-        // Root base (width 0.08)
         -perpX, 0, -perpZ,
          perpX, 0,  perpZ,
-        // Mid height arched outward (width 0.05)
         cos * curve * 0.5 - perpX * 0.6, height * 0.5, sin * curve * 0.5 - perpZ * 0.6,
         cos * curve * 0.5 + perpX * 0.6, height * 0.5, sin * curve * 0.5 + perpZ * 0.6,
-        // Sharp tip
         cos * curve, height * 0.9, sin * curve
       ]);
 
@@ -497,11 +555,7 @@ export class Vegetation {
     }
 
     const tuftGeo = BufferGeometryUtils.mergeGeometries(blades, false);
-    const grassMesh = this.createInstancedMesh(tuftGeo, grassMat, transforms, false, 0x4d912c, true);
-
-    this.scene.add(grassMesh);
-    this.instancedMeshes.push(grassMesh);
-    this.grassMeshes.push(grassMesh);
+    this.createChunkedInstancedMeshes(tuftGeo, grassMat, transforms, false, 0x4d912c, true);
   }
 
   createProceduralBushes(transforms, bushMat) {
@@ -513,23 +567,67 @@ export class Vegetation {
     c3.translate(-0.24, 0.25, -0.15);
 
     const bushGeo = BufferGeometryUtils.mergeGeometries([c1, c2, c3], false);
-    const bushMesh = this.createInstancedMesh(bushGeo, bushMat, transforms, true, 0x396c28);
-
-    this.scene.add(bushMesh);
-    this.instancedMeshes.push(bushMesh);
+    this.createChunkedInstancedMeshes(bushGeo, bushMat, transforms, true, 0x396c28);
   }
 
-  update(time) {
-    // Update wind time uniform for GPU vertex-shader horizontal grass sway
-    // (NO container rotation, so roots stay 100% on ground without moving up and down)
+  /**
+   * Main per-frame vegetation update:
+   * - Updates wind wave uniform.
+   * - Executes throttled distance & forward-focused culling for chunks & grass.
+   */
+  update(time, playerPos = null, cameraForward = null) {
     if (this.windUniforms && this.windUniforms.uTime) {
       this.windUniforms.uTime.value = time;
+    }
+
+    if (!playerPos || !this.chunks || this.chunks.length === 0) return;
+
+    this.cullTick = (this.cullTick || 0) + 1;
+    if (this.cullTick % 4 !== 0) return; // Run culling checks at ~15Hz to save CPU
+
+    const maxViewDist = this.cullingLimits.maxView;
+    const maxGrassDist = this.cullingLimits.maxGrass;
+
+    for (let i = 0; i < this.chunks.length; i++) {
+      const chunk = this.chunks[i];
+      const dx = chunk.centerX - playerPos.x;
+      const dz = chunk.centerZ - playerPos.z;
+      const dist = Math.hypot(dx, dz);
+
+      let forwardBias = 1.0;
+      if (cameraForward && dist > 1.0) {
+        const dirX = dx / dist;
+        const dirZ = dz / dist;
+        const dot = dirX * cameraForward.x + dirZ * cameraForward.z;
+        // Chunks in front get 1.35x distance allowance; chunks behind get reduced 0.55x
+        forwardBias = dot > 0 ? 1.0 + dot * 0.35 : Math.max(0.45, 1.0 + dot * 0.55);
+      }
+
+      const effectiveMaxDist = maxViewDist * forwardBias;
+      const hysteresis = chunk.visible ? 12 : -12;
+      const shouldBeVisible = dist <= (effectiveMaxDist + hysteresis);
+
+      if (chunk.visible !== shouldBeVisible) {
+        chunk.visible = shouldBeVisible;
+        chunk.group.visible = shouldBeVisible;
+      }
+
+      if (shouldBeVisible && chunk.grassMeshes.length > 0) {
+        const grassHysteresis = chunk.grassVisible ? 8 : -8;
+        const shouldShowGrass = dist <= (maxGrassDist * forwardBias + grassHysteresis);
+        if (chunk.grassVisible !== shouldShowGrass) {
+          chunk.grassVisible = shouldShowGrass;
+          for (let g = 0; g < chunk.grassMeshes.length; g++) {
+            chunk.grassMeshes[g].visible = shouldShowGrass;
+          }
+        }
+      }
     }
   }
 
   dispose() {
     for (const mesh of this.instancedMeshes) {
-      this.scene.remove(mesh);
+      if (mesh.parent) mesh.parent.remove(mesh);
       if (mesh.geometry) mesh.geometry.dispose();
       if (mesh.material) {
         if (Array.isArray(mesh.material)) {
@@ -539,6 +637,10 @@ export class Vegetation {
         }
       }
     }
+    for (const chunk of this.chunks) {
+      this.scene.remove(chunk.group);
+    }
+    this.chunks = [];
     this.instancedMeshes = [];
     this.grassMeshes = [];
     this.treeFoliageMeshes = [];

@@ -148,10 +148,10 @@ export class Buildings {
     roof.castShadow = true;
     tower.add(roof);
 
-    // Warm lantern light
+    // Warm lantern light (No dynamic cubemap shadow for mobile GPU performance)
     const lanternLight = new THREE.PointLight(0xffa726, 1.8, 20);
     lanternLight.position.set(0, 9.2, 0);
-    lanternLight.castShadow = true;
+    lanternLight.castShadow = false;
     tower.add(lanternLight);
 
     const lanternMesh = new THREE.Mesh(
@@ -455,10 +455,10 @@ export class Buildings {
 
     camp.add(log1, log2, log3);
 
-    // Dynamic flickering fire light
+    // Dynamic flickering fire light (No cubemap shadow for mobile GPU performance)
     const fireLight = new THREE.PointLight(0xff7700, 2.8, 14, 1.6);
     fireLight.position.set(0, 0.65, 0);
-    fireLight.castShadow = true;
+    fireLight.castShadow = false;
     camp.add(fireLight);
 
     // Multi-tier animated flame geometries

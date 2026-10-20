@@ -27,27 +27,28 @@ export class Atmosphere {
     this.sunLight.position.set(120, 160, 80);
     this.sunLight.castShadow = true;
 
-    // Configure Shadow Quality based on preset
-    let shadowMapSize = 2048;
+    // Configure Shadow Quality based on preset (Optimized for Android GPU fill-rate)
+    let shadowMapSize = 1024;
+    let shadowFrustum = 75;
     if (this.qualityPreset === 'low') {
-      shadowMapSize = 1024;
-      this.sunLight.castShadow = false; // Disable shadows on low for max performance
+      shadowMapSize = 512;
+      this.sunLight.castShadow = false; // Disable shadows on low for maximum Android FPS
     } else if (this.qualityPreset === 'high') {
-      shadowMapSize = 4096;
+      shadowMapSize = 2048;
+      shadowFrustum = 90;
     }
 
     this.sunLight.shadow.mapSize.width = shadowMapSize;
     this.sunLight.shadow.mapSize.height = shadowMapSize;
     this.sunLight.shadow.camera.near = 10;
-    this.sunLight.shadow.camera.far = 380;
+    this.sunLight.shadow.camera.far = 320;
 
-    const shadowFrustum = 90;
     this.sunLight.shadow.camera.left = -shadowFrustum;
     this.sunLight.shadow.camera.right = shadowFrustum;
     this.sunLight.shadow.camera.top = shadowFrustum;
     this.sunLight.shadow.camera.bottom = -shadowFrustum;
     this.sunLight.shadow.bias = -0.0001;
-    this.sunLight.shadow.normalBias = 0.05;
+    this.sunLight.shadow.normalBias = 0.04;
 
     this.scene.add(this.sunLight);
     this.scene.add(this.sunLight.target);
@@ -121,11 +122,12 @@ export class Atmosphere {
 
   setQuality(preset) {
     this.qualityPreset = preset;
+    if (!this.sunLight) return;
     if (preset === 'low') {
       this.sunLight.castShadow = false;
     } else {
       this.sunLight.castShadow = true;
-      const size = preset === 'high' ? 4096 : 2048;
+      const size = preset === 'high' ? 2048 : 1024;
       this.sunLight.shadow.mapSize.set(size, size);
       if (this.sunLight.shadow.map) {
         this.sunLight.shadow.map.dispose();
