@@ -15,7 +15,8 @@ const STORAGE_KEYS = {
 
 export class LobbyData {
   constructor() {
-    this.serverUrl = import.meta.env.VITE_SERVER_URL || (window.location.port === '5173' ? `http://${window.location.hostname || 'localhost'}:3001` : window.location.origin);
+    this.serverUrl = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SERVER_URL)
+      || (typeof window !== 'undefined' ? (window.location.port === '5173' ? `http://${window.location.hostname || 'localhost'}:3001` : window.location.origin) : 'http://localhost:3001');
 
     this.profile = this.loadProfile();
     this.settings = this.loadSettings();
@@ -179,6 +180,28 @@ export class LobbyData {
     } catch (e) {
       // Offline fallback
     }
+    if (!this.events || this.events.length === 0) {
+      this.events = [
+        {
+          id: 'evt_valley_festival',
+          title: 'Festival Lembah Rimba Wildlands',
+          desc: 'Warga desa menyambut panen raya dengan bonus EXP +20% di seluruh lembah.',
+          badge: 'OFFLINE',
+          banner: '🌾',
+          startDate: 'Aktif',
+          endDate: 'Sepanjang Waktu'
+        },
+        {
+          id: 'evt_marauder_hunt',
+          title: 'Perburuan Penyamun Lembah',
+          desc: 'Kalahkan musuh liar di sekitar Rumah Tua untuk mengumpulkan lencana pusaka.',
+          badge: 'QUEST',
+          banner: '⚔️',
+          startDate: 'Aktif',
+          endDate: 'Sepanjang Waktu'
+        }
+      ];
+    }
     return this.events;
   }
 
@@ -192,6 +215,32 @@ export class LobbyData {
       }
     } catch (e) {
       // Offline fallback
+    }
+    if (!this.missions || this.missions.length === 0) {
+      this.missions = [
+        {
+          id: 'msn_daily_walk',
+          title: 'Penjelajahan Lembah Harian',
+          desc: 'Jelajahi lembah sejauh 250 meter',
+          icon: '🧭',
+          progress: 0,
+          target: 250,
+          unit: 'm',
+          reward: '100 XP + 50 Gold',
+          isClaimed: false
+        },
+        {
+          id: 'msn_daily_combat',
+          title: 'Latihan Serangan Pedang',
+          desc: 'Lakukan tebasan kombinasi pedang',
+          icon: '⚔️',
+          progress: 0,
+          target: 5,
+          unit: 'kali',
+          reward: '80 XP',
+          isClaimed: false
+        }
+      ];
     }
     return this.missions;
   }
@@ -207,6 +256,19 @@ export class LobbyData {
     } catch (e) {
       // Offline fallback
     }
+    if (!this.news || this.news.length === 0) {
+      this.news = [
+        {
+          id: 'news_v2_launch',
+          title: 'Wildlands Android Offline-First Telah Hadir!',
+          date: 'Oktober 2026',
+          author: 'Tim Wildlands',
+          category: 'UPDATE',
+          excerpt: 'Kini petualangan open-world 3D Wildlands dapat dimainkan secara offline di Android tanpa koneksi internet.',
+          content: 'Pembaruan terkini menghadirkan sistem penyimpanan lokal IndexedDB, kontrol sentuh 60 FPS di mobile, dukungan immersive fullscreen, dan mode pemain tunggal offline.'
+        }
+      ];
+    }
     return this.news;
   }
 
@@ -220,6 +282,24 @@ export class LobbyData {
       }
     } catch (e) {
       // Offline fallback
+    }
+    if (!this.friends || this.friends.length === 0) {
+      this.friends = [
+        {
+          id: 'friend_danu',
+          name: 'Kakek Danu',
+          status: 'Tetua Valley Village',
+          avatar: '👴',
+          isOnline: false
+        },
+        {
+          id: 'friend_rian',
+          name: 'Penjaga Rian',
+          status: 'Patroli Gerbang Desa',
+          avatar: '🛡️',
+          isOnline: false
+        }
+      ];
     }
     return this.friends;
   }

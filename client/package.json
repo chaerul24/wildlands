@@ -9,6 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/preferences": "^8.0.1",
     "socket.io-client": "^4.7.5",
     "three": "^0.168.0"
   },

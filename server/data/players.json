@@ -58,5 +58,173 @@
     },
     "savedAt": "2026-10-19T16:20:24.012Z",
     "updatedAt": "2026-10-19T16:20:25.128Z"
+  },
+  "WL-8854": {
+    "schemaVersion": 2,
+    "playerId": "WL-8854",
+    "playerName": "Explorer_929",
+    "level": 1,
+    "xp": 140,
+    "xpNext": 300,
+    "gold": 250,
+    "stats": {
+      "level": 1,
+      "maxHp": 140,
+      "maxStamina": 100,
+      "attack": 31,
+      "defense": 28,
+      "critChance": 0.1,
+      "blockRate": 0.15
+    },
+    "position": {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "yaw": 0
+    },
+    "inventory": {
+      "items": [
+        {
+          "id": "potion_hp",
+          "count": 3
+        },
+        {
+          "id": "potion_sta",
+          "count": 2
+        },
+        {
+          "id": "food_valley_bread",
+          "count": 2
+        }
+      ],
+      "equipped": {
+        "weapon": "wpn_wood_sword",
+        "shield": "shd_wood_buckler",
+        "armor_head": null,
+        "armor_chest": "arm_leather_tunic",
+        "armor_gloves": null,
+        "armor_legs": null,
+        "armor_boots": null,
+        "armor": "arm_leather_tunic"
+      }
+    },
+    "quests": {
+      "active": [],
+      "completed": []
+    },
+    "savedAt": "2026-10-20T04:01:40.723Z",
+    "updatedAt": "2026-10-20T04:01:40.786Z"
+  },
+  "WL-4946": {
+    "schemaVersion": 2,
+    "playerId": "WL-4946",
+    "playerName": "Explorer_455",
+    "level": 1,
+    "xp": 140,
+    "xpNext": 300,
+    "gold": 250,
+    "stats": {
+      "level": 1,
+      "maxHp": 140,
+      "maxStamina": 100,
+      "attack": 31,
+      "defense": 28,
+      "critChance": 0.1,
+      "blockRate": 0.15
+    },
+    "position": {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "yaw": 0
+    },
+    "inventory": {
+      "items": [
+        {
+          "id": "potion_hp",
+          "count": 3
+        },
+        {
+          "id": "potion_sta",
+          "count": 2
+        },
+        {
+          "id": "food_valley_bread",
+          "count": 2
+        }
+      ],
+      "equipped": {
+        "weapon": "wpn_wood_sword",
+        "shield": "shd_wood_buckler",
+        "armor_head": null,
+        "armor_chest": "arm_leather_tunic",
+        "armor_gloves": null,
+        "armor_legs": null,
+        "armor_boots": null,
+        "armor": "arm_leather_tunic"
+      }
+    },
+    "quests": {
+      "active": [],
+      "completed": []
+    },
+    "savedAt": "2026-10-20T04:02:14.299Z",
+    "updatedAt": "2026-10-20T04:02:14.322Z"
+  },
+  "WL-9325": {
+    "schemaVersion": 2,
+    "playerId": "WL-9325",
+    "playerName": "Explorer_347",
+    "level": 1,
+    "xp": 140,
+    "xpNext": 300,
+    "gold": 250,
+    "stats": {
+      "level": 1,
+      "maxHp": 140,
+      "maxStamina": 100,
+      "attack": 31,
+      "defense": 28,
+      "critChance": 0.1,
+      "blockRate": 0.15
+    },
+    "position": {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "yaw": 0
+    },
+    "inventory": {
+      "items": [
+        {
+          "id": "potion_hp",
+          "count": 3
+        },
+        {
+          "id": "potion_sta",
+          "count": 2
+        },
+        {
+          "id": "food_valley_bread",
+          "count": 2
+        }
+      ],
+      "equipped": {
+        "weapon": "wpn_wood_sword",
+        "shield": "shd_wood_buckler",
+        "armor_head": null,
+        "armor_chest": "arm_leather_tunic",
+        "armor_gloves": null,
+        "armor_legs": null,
+        "armor_boots": null,
+        "armor": "arm_leather_tunic"
+      }
+    },
+    "quests": {
+      "active": [],
+      "completed": []
+    },
+    "savedAt": "2026-10-20T04:06:33.105Z",
+    "updatedAt": "2026-10-20T04:06:33.129Z"
   }
 }

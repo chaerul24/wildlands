@@ -306,9 +306,11 @@ export class LobbyManager {
     this.showToast('Memasuki dunia petualangan Wildlands...', 'success');
 
     if (this.callbacks.onStartWorld) {
+      const isOffline = !navigator.onLine || Boolean(window.__WILDLANDS_FORCE_OFFLINE);
       this.callbacks.onStartWorld({
         name: this.data.profile.username,
-        quality: this.data.settings.quality
+        quality: this.data.settings.quality,
+        isOffline
       });
     }
   }

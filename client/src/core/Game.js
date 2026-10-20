@@ -195,7 +195,7 @@ export class Game {
 
     // 8. UI Manager (HUD, Pause, Touch controls)
     this.ui = new UIManager({
-      onStart: ({ name, quality }) => this.startGame(name, quality),
+      onStart: ({ name, quality, isOffline }) => this.startGame(name, quality, isOffline),
       onResume: () => this.resumeGame(),
       onQualityChange: (quality) => this.setQuality(quality),
       onSensitivityChange: (val) => this.cameraController.setSensitivity(val),
@@ -207,7 +207,7 @@ export class Game {
 
     // 8b. Professional Multiplayer Lobby Manager
     this.lobby = new LobbyManager({
-      onStartWorld: ({ name, quality }) => this.startGame(name, quality),
+      onStartWorld: ({ name, quality, isOffline }) => this.startGame(name, quality, isOffline),
       onApplyQuality: (quality) => this.setQuality(quality),
       onApplySensitivity: (val) => {
         if (this.cameraController) {
@@ -358,11 +358,51 @@ export class Game {
       setTimeout(() => this.onWindowResize(), 100);
     });
 
+    // 9b. Context Loss Handlers & Autosave
+    if (this.canvas) {
+      this.canvas.addEventListener('webglcontextlost', (e) => {
+        e.preventDefault();
+        this.isContextLost = true;
+        console.warn('[Game] WebGL context lost! Pausing rendering.');
+        if (this.saveSystem) this.saveSystem.save(true);
+      });
+      this.canvas.addEventListener('webglcontextrestored', () => {
+        this.isContextLost = false;
+        console.log('[Game] WebGL context restored.');
+        this.setQuality(this.qualityPreset);
+      });
+    }
+
+    // Capacitor Native App Lifecycle (Pause/Resume/Background)
+    if (typeof window !== 'undefined') {
+      import('@capacitor/app').then(({ App }) => {
+        App.addListener('appStateChange', ({ isActive }) => {
+          if (!isActive) {
+            if (this.isRunning && !this.isPaused) {
+              this.togglePause();
+            }
+            if (this.saveSystem) {
+              this.saveSystem.save(true);
+            }
+          }
+        });
+      }).catch(() => {
+        // Fallback for regular web browsers
+      });
+    }
+
+    // Periodic Autosave every 45s while playing
+    setInterval(() => {
+      if (this.isRunning && !this.isPaused && this.saveSystem) {
+        this.saveSystem.save();
+      }
+    }, 45000);
+
     // 10. Start Animation Loop
     this.animate();
   }
 
-  startGame(playerName, quality) {
+  startGame(playerName, quality, isOffline = false) {
     this.qualityPreset = quality || 'medium';
     this.setQuality(this.qualityPreset);
 
@@ -370,12 +410,25 @@ export class Game {
       this.hideout.updateUsername(playerName);
     }
 
+    const shouldRunOffline = isOffline || (typeof navigator !== 'undefined' && !navigator.onLine) || Boolean(window.__WILDLANDS_FORCE_OFFLINE);
+
     // Spawn local player
     if (!this.player) {
       this.player = new Player(this.scene, this.terrain, this.buildings, playerName);
       if (this.minimap) {
         this.minimap.player = this.player;
       }
+
+      // Link player to SaveSystem and restore position if loaded
+      if (this.saveSystem) {
+        this.saveSystem.player = this.player;
+        if (this.saveSystem.lastLoadedPosition) {
+          const p = this.saveSystem.lastLoadedPosition;
+          this.player.position.set(p.x, p.y, p.z);
+          if (typeof p.yaw === 'number') this.player.yaw = p.yaw;
+        }
+      }
+
       // Attach initial equipped weapon
       const currentEquippedWeaponId = this.inventory?.equipped?.weapon;
       if (currentEquippedWeaponId) {
@@ -384,10 +437,14 @@ export class Game {
           this.player.character.attachWeapon(weaponDef.modelUrl);
         }
       }
+    } else {
+      if (this.saveSystem) {
+        this.saveSystem.player = this.player;
+      }
     }
 
-    // Connect to multiplayer server with initial spawn elevation
-    this.network.connect(playerName, this.player.getState().position);
+    // Connect to multiplayer server OR run offline single-player
+    this.network.connect(playerName, this.player.getState().position, shouldRunOffline);
 
     this.isRunning = true;
     this.isPaused = false;

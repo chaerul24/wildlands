@@ -72,7 +72,8 @@ export class UIManager {
         this.updateMobileControlsVisibility();
 
         if (this.callbacks.onStart) {
-          this.callbacks.onStart({ name, quality });
+          const isOffline = !navigator.onLine || Boolean(window.__WILDLANDS_FORCE_OFFLINE);
+          this.callbacks.onStart({ name, quality, isOffline });
         }
       });
     }
@@ -401,12 +402,19 @@ export class UIManager {
 
   updateHUD(netStatus, coords) {
     if (netStatus) {
-      if (netStatus.connected) {
+      if (netStatus.isOffline) {
         this.statusDot.classList.add('online');
+        this.statusDot.style.backgroundColor = '#10b981';
+        this.statusText.textContent = 'Solo Offline';
+        this.pingText.textContent = 'OFFLINE';
+      } else if (netStatus.connected) {
+        this.statusDot.classList.add('online');
+        this.statusDot.style.backgroundColor = '';
         this.statusText.textContent = `${netStatus.onlineCount} Online`;
         this.pingText.textContent = `${netStatus.ping} ms`;
       } else {
         this.statusDot.classList.remove('online');
+        this.statusDot.style.backgroundColor = '';
         this.statusText.textContent = 'Connecting...';
         this.pingText.textContent = '-- ms';
       }

@@ -10,6 +10,7 @@ export class NetworkManager {
 
     this.socket = null;
     this.isConnected = false;
+    this.isOfflineMode = false;
     this.selfId = null;
     this.remotePlayers = new Map();
 
@@ -23,8 +24,25 @@ export class NetworkManager {
     this.SEND_INTERVAL_MS = 1000 / 20;
   }
 
-  connect(playerName, initialPosition = null) {
-    const serverUrl = import.meta.env.VITE_SERVER_URL || (window.location.port === '5173' ? `http://${window.location.hostname || 'localhost'}:3001` : window.location.origin);
+  connect(playerName, initialPosition = null, isOffline = false) {
+    if (isOffline) {
+      this.isOfflineMode = true;
+      this.isConnected = false;
+      if (this.socket) {
+        this.socket.disconnect();
+        this.socket = null;
+      }
+      this.clearAllRemotePlayers();
+      this.notifyStatus();
+      if (this.onNotification) {
+        this.onNotification('Mode Offline Aktif — Selamat Berpetualang Solo!', 'info');
+      }
+      return;
+    }
+
+    this.isOfflineMode = false;
+    const serverUrl = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SERVER_URL)
+      || (typeof window !== 'undefined' ? (window.location.port === '5173' ? `http://${window.location.hostname || 'localhost'}:3001` : window.location.origin) : 'http://localhost:3001');
 
     this.socket = io(serverUrl, {
       reconnectionAttempts: 10,
@@ -141,7 +159,7 @@ export class NetworkManager {
   }
 
   sendPlayerUpdate(playerState) {
-    if (!this.isConnected || !this.socket) return;
+    if (this.isOfflineMode || !this.isConnected || !this.socket) return;
 
     const now = Date.now();
     if (now - this.lastSendTime >= this.SEND_INTERVAL_MS) {
@@ -161,9 +179,10 @@ export class NetworkManager {
     if (this.onStatusChange) {
       this.onStatusChange({
         connected: this.isConnected,
-        ping: this.ping,
-        onlineCount: this.remotePlayers.size + (this.isConnected ? 1 : 0),
-        players: Array.from(this.remotePlayers.values()).map(r => ({
+        isOffline: this.isOfflineMode,
+        ping: this.isOfflineMode ? 0 : this.ping,
+        onlineCount: this.isOfflineMode ? 1 : this.remotePlayers.size + (this.isConnected ? 1 : 0),
+        players: this.isOfflineMode ? [] : Array.from(this.remotePlayers.values()).map(r => ({
           id: r.id,
           name: r.name,
           color: r.color
@@ -179,5 +198,6 @@ export class NetworkManager {
     }
     this.clearAllRemotePlayers();
     this.isConnected = false;
+    this.isOfflineMode = false;
   }
 }

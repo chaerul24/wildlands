@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Wildlands</string>
+    <string name="title_activity_main">Wildlands</string>
+    <string name="package_name">com.wildlands.rpg</string>
+    <string name="custom_url_scheme">com.wildlands.rpg</string>
+</resources>
